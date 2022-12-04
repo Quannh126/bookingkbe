@@ -1,0 +1,8 @@
+{
+  "name": "bookingkbe",
+  "version": "1.0.0",
+  "description": "backend for bookingk web",
+  "main": "src/server.ts",
+  "author": "Quan NH",
+  "license": "MIT"
+}
