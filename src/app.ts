@@ -1,11 +1,12 @@
 import express from 'express'
-import {Route} from 'core/interfaces'
+import {Route} from '@core/interfaces'
 import mongoose from 'mongoose';
 import hpp from 'hpp';
 import helmet from 'helmet'
 import cors from 'cors';
 import morgan from 'morgan'
-import { Logger } from './core/utils';
+import { Logger } from '@core/utils';
+import { errorMiddleware } from '@core/middlewares';
 class App {
     public app: express.Application;
     public port: string | number;
@@ -16,6 +17,20 @@ class App {
         this.production = process.env.NODE_ENV == 'production'? true : false;
         this.initializeRoutes(routes);
         this.connectToDatabase();
+        this.initializeMiddleWares();
+    }
+
+    private initializeMiddleWares(){
+        if(this.production){
+            this.app.use(hpp());
+            this.app.use(helmet());
+            this.app.use(cors({origin: 'https://booking-k.vercel.app/', credentials: true}));
+            this.app.use(morgan('combinded'));
+        }else{
+            this.app.use(cors({origin: true, credentials: true}));
+            this.app.use(morgan('dev'));
+        }
+        this.app.use(errorMiddleware)
     }
     public listen(){
         this.app.listen(this.port, ()=>{
@@ -32,7 +47,6 @@ class App {
         
             const connectString = process.env.MONGODB_URL;
             const options = {
-
             };
             if(!connectString){
                 Logger.info('Connectiong string is blank');
@@ -42,25 +56,10 @@ class App {
                 .connect(connectString).catch((error)=>{
                     Logger.error(error);
             })
-            Logger.info('Database connected...')
-
-        
+            Logger.info('Database connected...')   
     }
 
-    private initializeMiddleWares(){
-        if(this.production){
-            this.app.use(hpp());
-            this.app.use(helmet());
-            this.app.use(cors({origin: 'https://booking-k.vercel.app/', credentials: true}));
-            this.app.use(morgan('combinded'));
-            
-
-        }else{
-            this.app.use(cors({origin: true, credentials: true}));
-            this.app.use(morgan('dev'));
-        }
-
-    }
+    
 }
 
 export default App;
