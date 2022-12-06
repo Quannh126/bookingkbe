@@ -14,10 +14,10 @@ class App {
     constructor(routes: Route[]){
         this.app = express();
         this.port = process.env.PORT || 5000;
-        this.production = process.env.NODE_ENV == 'production'? true : false;
-        this.initializeRoutes(routes);
-        this.connectToDatabase();
+        this.production = process.env.NODE_ENV === 'production'? true : false;
         this.initializeMiddleWares();
+        this.connectToDatabase();
+        this.initializeRoutes(routes);
     }
 
     private initializeMiddleWares(){
@@ -30,7 +30,9 @@ class App {
             this.app.use(cors({origin: true, credentials: true}));
             this.app.use(morgan('dev'));
         }
-        this.app.use(errorMiddleware)
+        this.app.use(errorMiddleware);
+        this.app.use(express.json());
+        this.app.use(express.urlencoded({extended: true}));
     }
     public listen(){
         this.app.listen(this.port, ()=>{

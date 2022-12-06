@@ -3,7 +3,8 @@ import { cleanEnv, str, email, json } from 'envalid'
 const validateEnv = () => {
     cleanEnv(process.env,{
         NODE_ENV: str(),
-        MONGODB_URL: str()
+        MONGODB_URL: str(),
+        JWT_KEY: str()
     })
 }
 
