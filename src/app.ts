@@ -18,6 +18,7 @@ class App {
         this.initializeMiddleWares();
         this.connectToDatabase();
         this.initializeRoutes(routes);
+        this.initializeErrorMiddlewares();
     }
 
     private initializeMiddleWares(){
@@ -30,9 +31,13 @@ class App {
             this.app.use(cors({origin: true, credentials: true}));
             this.app.use(morgan('dev'));
         }
-        this.app.use(errorMiddleware);
+        
         this.app.use(express.json());
         this.app.use(express.urlencoded({extended: true}));
+        
+    }
+    private  initializeErrorMiddlewares(){
+        this.app.use(errorMiddleware);
     }
     public listen(){
         this.app.listen(this.port, ()=>{

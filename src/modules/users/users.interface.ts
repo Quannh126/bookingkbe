@@ -10,5 +10,5 @@ export default interface IUser {
    salt: string;
    date: Date;
    avatar: string;
-
+   password: string;
 } 

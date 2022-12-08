@@ -14,7 +14,10 @@ class UserService {
         if(isEmptyObject(model)){
             throw new  HttpException(400, 'Model is empty');
         }
-        const user = await this.userModel.findOne({email: model.email, phone: model.phone});
+        const user = await this.userModel.findOne({email: model.email});
+        if(user){
+            throw new HttpException(409,"User exist");
+        }
         const avatar = gravatar.url(model.email!, {
             size: '200',
             rating: 'g',

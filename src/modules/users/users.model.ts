@@ -43,6 +43,11 @@ const UserSchema = new Schema<IUser & mongoose.Document>({
     avatar: {
         type: String,
         require: true
+    },
+    password: {
+        type: String,
+        require: true
     }
 });
-export default model<IUser & mongoose.Document>('User', UserSchema);
+const User = model<IUser & mongoose.Document>('User', UserSchema);
+export default User;
