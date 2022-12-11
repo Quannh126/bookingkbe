@@ -1,4 +1,4 @@
-import {IsNotEmpty, MinLength} from 'class-validator'
+import {IsNotEmpty, minLength, MinLength} from 'class-validator'
 
 export default class RegisterDto {
     constructor(name: string, email: string, phone: number, password: string){
@@ -14,8 +14,8 @@ export default class RegisterDto {
     @IsNotEmpty()
     public phone: Number;
     @IsNotEmpty()
-    @MinLength(10, {
-        message: 'Title is too short',
+    @MinLength(6,{
+        message: 'Too short'
     })
     public password: string;
 }

@@ -1,13 +1,14 @@
 import { Router } from "express";
 import { Route } from "@core/interfaces";
-import UserController from "./users.controller";
+import CarController from "./cars.controller";
 import { authMiddleware, validateMiddleware } from "@core/middlewares";
-import RegisterDto from "./dtos/register.dto";
+import RegisterDto from "@modules/users/dtos/register.dto";
+
 export default class UserRoute implements Route {
-    public path = '/api/users';
+    public path = '/api/cars';
     public router = Router();
 
-    public userController = new UserController();
+    public carController = new CarController();
 
     constructor(){
         this.initializeRoutes();
@@ -16,22 +17,27 @@ export default class UserRoute implements Route {
         this.router.post(
             this.path,
             validateMiddleware(RegisterDto, true),
-            this.userController.register,
+            this.carController.addCar,
         );
 
         this.router.get(
             this.path,
-            this.userController.getAllUser
+            this.carController.getAllCar
         );
         this.router.get(
             this.path + '/paging/:page',
-            this.userController.getAllPaging
+            this.carController.getAllPaging
         )
 
         this.router.delete(
             this.path + '/:uid',
             authMiddleware,
-            this.userController.deleteUser
+            this.carController.deleteCar
+        )
+        this.router.put(
+            this.path + '/:uid',
+            authMiddleware,
+            this.carController.deleteCar
         )
     }
 }

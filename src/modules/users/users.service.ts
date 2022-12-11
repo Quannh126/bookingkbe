@@ -7,6 +7,7 @@ import gravatar from 'gravatar';
 import bcryptjs from 'bcryptjs';
 import IUser from './users.interface';
 import jwt from 'jsonwebtoken';
+import { IPagination } from '@core/interfaces';
 class UserService {
     public userModel = User;
 
@@ -34,7 +35,47 @@ class UserService {
         });
         return this.createToken(createUser);
     }
+    public async getAll(): Promise<IUser[]>{
+        const users = await this.userModel.find();
+        if(!users){
+            throw new HttpException(404, "User is not exists");
+        }
+        return users ;
+    }
+    public async getAllPaging(keyword: string, page: number): Promise<IPagination<IUser>>{
+        const pageSize = Number(process.env.PAGE_SIZE);
+        let query = {};
+        if(keyword){
+            query = {
+                $or: [
+                    {email:keyword},
+                    {name: keyword}
+                ]};
+        }
+        const items = await this.userModel
+        .find(query)
+        .sort({date: -1})
+        .skip((page-1)*pageSize)
+        .limit(pageSize) 
+        .exec() ;
+        const count = await  this.userModel.find(query).estimatedDocumentCount().exec();
+        return {
+            total: count,
+            page: page,
+            pageSize: pageSize,
+            items: items
+        }
+            
+    }
 
+    public async deleteUser(uid: string ): Promise<IUser>{
+        const deleteUser = await this.userModel.findByIdAndDelete(uid).exec();
+
+        if(!deleteUser){
+            throw new HttpException(409, "ID invalid");
+        }
+        return deleteUser;
+    }
     private createToken (user: IUser): TokenData{
         const dataToken: DataStoredInToken = {id: user._id};
         const secret: string = process.env.JWT_KEY!;

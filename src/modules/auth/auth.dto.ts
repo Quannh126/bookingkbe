@@ -9,8 +9,5 @@ export default class LoginDto {
     @IsNotEmpty()
     public email: string;
     @IsNotEmpty()
-    @MinLength(10, {
-        message: 'Title is too short',
-    })
     public password: string;
 }

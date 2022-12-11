@@ -8,8 +8,6 @@ const UserSchema = new Schema<IUser & mongoose.Document>({
     
     phone: {
         type: String,
-        unique: true,
-        index: true, 
         require: true
     },
     address: {
@@ -17,6 +15,8 @@ const UserSchema = new Schema<IUser & mongoose.Document>({
         require: true
     },
     email: {
+        unique: true,
+        index: true,
         type: String,
         require: false
     },

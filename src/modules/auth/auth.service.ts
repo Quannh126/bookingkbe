@@ -2,10 +2,10 @@ import {User,IUser} from '@modules/users';
 import { DataStoredInToken, TokenData } from '@modules/auth'
 import { isEmptyObject } from '@core/utils/helper';
 import { HttpException } from '@core/exceptions';
-import gravatar from 'gravatar';
 import bcryptjs from 'bcryptjs';
 import jwt from 'jsonwebtoken';
 import LoginDto from './auth.dto';
+
 class AuthService {
     public userModel = User;
 
@@ -17,7 +17,7 @@ class AuthService {
         if(!user){
             throw new  HttpException(409, `Email not exist`);
         }
-        
+        console.log(model.password, + "---" + user.password)
         const isMatchPassword = await bcryptjs.compare(model.password, user.password ) 
         if(!isMatchPassword){
             throw new  HttpException(409, `Credential is not valid`);
@@ -33,10 +33,12 @@ class AuthService {
         }
         return user;
     } 
+
+    
     private createToken (user: IUser): TokenData{
         const dataToken: DataStoredInToken = {id: user._id};
         const secret: string = process.env.JWT_KEY!;
-        const expiresIn: number = 60;
+        const expiresIn: number = 3600;
         return {
             token: jwt.sign(dataToken, secret, {expiresIn: expiresIn })!
         }
