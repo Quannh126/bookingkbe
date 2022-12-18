@@ -1,8 +1,14 @@
 export interface DataStoredInToken {
     id: string;
-
 }
 export interface TokenData {
-    token: string;
+    accessToken: string;
+    expiredAt: number;
 }
 
+export interface IProfile {
+    name: string;
+    email: string;
+    avatar: string;
+    phone: string;
+}
