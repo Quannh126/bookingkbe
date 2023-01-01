@@ -1,33 +1,32 @@
-import { IsNotEmpty, MinLength } from "class-validator";
+import { IsNotEmpty } from "class-validator";
 
 export default class UpdateCarDto {
-  constructor(
-    id: string,
-    name: string,
-    type: string,
-    capacity: string,
-    company: string,
-    imagePath: string,
-    policy: string
-  ) {
-    this.name = name;
-    this.type = type;
-    this.capacity = capacity;
-    this.company = company;
-    this.id = id;
-    this.policy = policy;
-    this.imagePath = imagePath;
-  }
-  public policy: string;
-  @IsNotEmpty()
-  public id: String;
-  @IsNotEmpty()
-  public company: string;
-  @IsNotEmpty()
-  public capacity: string;
-  @IsNotEmpty()
-  public type: string;
-  @IsNotEmpty()
-  public name: string;
-  public imagePath: string;
+    constructor(
+        _id: string,
+        name: string,
+        typeCar: string,
+        capacity: string,
+        status: string,
+        description: string,
+        imagePath: string
+    ) {
+        this._id = _id;
+        this.name = name;
+        this.typeCar = typeCar;
+        this.imagePath = imagePath;
+        this.capacity = capacity;
+        this.status = status;
+        this.description = description;
+    }
+
+    @IsNotEmpty()
+    public capacity: string;
+    @IsNotEmpty()
+    public typeCar: string;
+    @IsNotEmpty()
+    public name: string;
+    public _id: string;
+    public description: string;
+    public status: string;
+    public imagePath: string;
 }

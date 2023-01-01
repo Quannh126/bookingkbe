@@ -1,8 +1,9 @@
-import { Car, ICar } from "@modules/cars";
+import { Car, ICar, ICarDetail } from "@modules/cars";
 import { isEmptyObject } from "@core/utils/helper";
 import { HttpException } from "@core/exceptions";
 import { IPagination } from "@core/interfaces";
 import { AddCarDto, UpdateCarDto } from "@modules/cars/dto";
+// import ICarDetail from "./interfaces/carDetail.interface";
 
 class CarsService {
     public carModel = Car;
@@ -20,9 +21,20 @@ class CarsService {
         });
     }
 
-    public async getAllCar(): Promise<ICar[]> {
+    public async getAllCar(): Promise<ICarDetail[]> {
         const cars = await this.carModel
-            .find()
+            .find(
+                {},
+                {
+                    _id: 1,
+                    name: 1,
+                    typeCar: 1,
+                    imagePath: 1,
+                    description: 1,
+                    capacity: 1,
+                    detail: 1,
+                }
+            )
             .exec()
             .catch((err) => {
                 throw new HttpException(405, err.message);
@@ -75,8 +87,9 @@ class CarsService {
         };
     }
 
-    public async deleteCar(uid: string): Promise<ICar> {
-        const deleteCar = await this.carModel.findByIdAndDelete(uid).exec();
+    public async deleteCar(id: string): Promise<ICar> {
+        console.log(id);
+        const deleteCar = await this.carModel.findByIdAndDelete(id).exec();
 
         if (!deleteCar) {
             throw new HttpException(409, "ID invalid");
@@ -84,13 +97,14 @@ class CarsService {
         return deleteCar;
     }
 
-    public async updateCar(model: UpdateCarDto): Promise<ICar> {
-        if (isEmptyObject(model)) {
+    public async updateCar(data: ICarDetail): Promise<ICarDetail> {
+        if (isEmptyObject(data)) {
             throw new HttpException(400, "Model is empty");
         }
-        const result = await this.carModel.findOneAndUpdate({
-            ...model,
-        });
+        const result = await this.carModel.findOneAndUpdate(
+            { _id: data._id },
+            data
+        );
         if (!result) {
             throw new HttpException(409, "Id valid");
         }

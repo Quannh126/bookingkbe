@@ -1,5 +1,5 @@
 import { NextFunction, request, Request, response, Response } from "express";
-import { CarsService } from "@modules/cars";
+import { CarsService, ICarDetail } from "@modules/cars";
 import { TokenData } from "@modules/auth";
 import AddCarDto from "./dto/addCars.dto";
 import UpdateCarDto from "./dto/updateCars.dto";
@@ -10,7 +10,6 @@ export default class UserController {
         try {
             const model: AddCarDto = req.body;
             const car = await this.carService.addCar(model);
-
             res.status(201).json(car);
         } catch (error) {
             next(error);
@@ -65,7 +64,8 @@ export default class UserController {
         next: NextFunction
     ) => {
         try {
-            const result = await this.carService.deleteCar(req.params.id);
+            console.log(req.params.carid);
+            const result = await this.carService.deleteCar(req.params.carid);
             res.status(200).json(result);
         } catch (error) {
             next(error);
@@ -77,8 +77,8 @@ export default class UserController {
         next: NextFunction
     ) => {
         try {
-            const model: UpdateCarDto = req.body;
-            await this.carService.addCar(model);
+            const model: ICarDetail = req.body;
+            await this.carService.updateCar(model);
 
             const result = await this.carService.updateCar(model);
 
