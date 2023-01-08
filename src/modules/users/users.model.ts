@@ -1,53 +1,50 @@
-import mongoose, {Schema, model} from "mongoose"
+import mongoose, { Schema, model } from "mongoose";
 import IUser from "./users.interface";
 const UserSchema = new Schema<IUser & mongoose.Document>({
-    name:{
+    fullname: {
         type: String,
         require: true,
     },
-    
+
     phone: {
         type: String,
-        require: true
+        require: true,
     },
-    address: {
-        type: String,
-        require: true
-    },
-    email: {
+
+    username: {
         unique: true,
         index: true,
         type: String,
-        require: false
+        require: false,
     },
     info: {
         type: String,
-        require: false
+        require: false,
     },
     resetPasswordLink: {
         type: String,
-        require: true
+        require: true,
     },
     isVerified: {
         type: Boolean,
-        require: true
+        require: true,
     },
     salt: {
         type: String,
-        require: true
+        require: true,
     },
     date: {
         type: Date,
-        require: false
+        require: false,
     },
     avatar: {
         type: String,
-        require: true
+        require: true,
     },
     password: {
         type: String,
-        require: true
-    }
+        require: true,
+    },
 });
-const User = model<IUser & mongoose.Document>('User', UserSchema);
+const User = model<IUser & mongoose.Document>("User", UserSchema);
 export default User;

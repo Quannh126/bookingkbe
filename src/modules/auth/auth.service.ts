@@ -35,9 +35,9 @@ class AuthService {
         }
         return {
             phone: user.phone,
-            name: user.name,
+            name: user.fullname,
             avatar: user.avatar,
-            email: user.email,
+            username: user.username,
         };
     }
 

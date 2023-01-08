@@ -1,7 +1,7 @@
 import { Car, ICar, ICarDetail } from "@modules/cars";
 import { isEmptyObject } from "@core/utils/helper";
 import { HttpException } from "@core/exceptions";
-import { IPagination } from "@core/interfaces";
+import { IPagination, KeyValue } from "@core/interfaces";
 import { AddCarDto, UpdateCarDto } from "@modules/cars/dto";
 // import ICarDetail from "./interfaces/carDetail.interface";
 
@@ -20,7 +20,11 @@ class CarsService {
             date: Date.now(),
         });
     }
-
+    public async getListNameCars(): Promise<KeyValue[]> {
+        const list = await this.carModel.find({}, { _id: 1, name: 1 }).exec();
+        let result = list.map(({ _id: key, name: value }) => ({ key, value }));
+        return result;
+    }
     public async getAllCar(): Promise<ICarDetail[]> {
         const cars = await this.carModel
             .find(
@@ -101,10 +105,9 @@ class CarsService {
         if (isEmptyObject(data)) {
             throw new HttpException(400, "Model is empty");
         }
-        const result = await this.carModel.findOneAndUpdate(
-            { _id: data._id },
-            data
-        );
+        const result = await this.carModel.findByIdAndUpdate(data!._id, {
+            ...data,
+        });
         if (!result) {
             throw new HttpException(409, "Id valid");
         }

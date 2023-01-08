@@ -1,10 +1,10 @@
 import { NextFunction, request, Request, response, Response } from "express";
 import { CarsService, ICarDetail } from "@modules/cars";
 import { TokenData } from "@modules/auth";
-import AddCarDto from "./dto/addCars.dto";
-import UpdateCarDto from "./dto/updateCars.dto";
+import AddCarDto from "./dto/add_cars.dto";
+import UpdateCarDto from "./dto/update_cars.dto";
 
-export default class UserController {
+export default class CarController {
     private carService = new CarsService();
     public addCar = async (req: Request, res: Response, next: NextFunction) => {
         try {
@@ -15,7 +15,18 @@ export default class UserController {
             next(error);
         }
     };
-
+    public getListNameCars = async (
+        req: Request,
+        res: Response,
+        next: NextFunction
+    ) => {
+        try {
+            const list = await this.carService.getListNameCars();
+            res.status(200).json(list);
+        } catch (error) {
+            next(error);
+        }
+    };
     public getAllCar = async (
         req: Request,
         res: Response,

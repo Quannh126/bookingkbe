@@ -8,7 +8,7 @@ export interface TokenData {
 
 export interface IProfile {
     name: string;
-    email: string;
+    username: string;
     avatar: string;
     phone: string;
 }

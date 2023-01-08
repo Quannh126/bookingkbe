@@ -20,46 +20,10 @@ const CarSchema = new Schema<ICar & mongoose.Document>({
     description: {
         type: String,
     },
-
-    trips: [
-        {
-            arrival: {
-                type: String,
-            },
-            departure: {
-                type: String,
-            },
-            to: {
-                type: String,
-            },
-            from: {
-                type: String,
-            },
-            phoneDriver: {
-                type: String,
-            },
-            driverName: {
-                type: String,
-            },
-            imagePath: {
-                type: String,
-            },
-            fare: {
-                type: String,
-            },
-            seatsBooked: {
-                type: [Number],
-            },
-            journeyDateo: {
-                to: {
-                    type: String,
-                },
-                from: {
-                    type: String,
-                },
-            },
-        },
-    ],
+    status: {
+        type: String,
+        required: false,
+    },
     comment: [
         {
             user: {

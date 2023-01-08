@@ -1,5 +1,3 @@
-import ITrip from "./trip.interface";
-
 export default interface ICar {
     name: string;
     typeCar: string;
@@ -7,10 +5,9 @@ export default interface ICar {
     imagePath: string;
     capacity: string;
     description: string;
-    trips: ITrip[];
     comment: IComment[];
+    status: string;
 }
-
 export interface IComment {
     _id: string;
     user: string;

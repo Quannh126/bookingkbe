@@ -6,4 +6,5 @@ export default interface ICarDetail {
     capacity: string;
     imagePath: string;
     detail: string;
+    status: string;
 }
