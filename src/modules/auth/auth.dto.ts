@@ -1,13 +1,13 @@
-import {IsNotEmpty, MinLength} from 'class-validator'
+import { IsNotEmpty, MinLength } from "class-validator";
 
 export default class LoginDto {
-    constructor(name: string, email: string, phone: number, password: string){
-        this.email = email;
+    constructor(username: string, password: string) {
+        this.username = username;
         this.password = password;
     }
-   
+
     @IsNotEmpty()
-    public email: string;
+    public username: string;
     @IsNotEmpty()
     public password: string;
 }

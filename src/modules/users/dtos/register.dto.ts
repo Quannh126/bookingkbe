@@ -1,21 +1,17 @@
-import {IsNotEmpty, minLength, MinLength} from 'class-validator'
+import { IsNotEmpty, minLength, MinLength } from "class-validator";
 
 export default class RegisterDto {
-    constructor(name: string, email: string, phone: number, password: string){
-        this.email = email;
-        this.name = name;
-        this.phone = phone;
-        this.password = password;
-    }
     @IsNotEmpty()
-    public name: string ;
+    public fullname: string | undefined;
     @IsNotEmpty()
-    public email: string;
+    public username: string | undefined;
     @IsNotEmpty()
-    public phone: Number;
+    public phone: Number | undefined;
     @IsNotEmpty()
-    @MinLength(6,{
-        message: 'Too short'
+    public email: string | undefined;
+    @IsNotEmpty()
+    @MinLength(6, {
+        message: "Too short",
     })
-    public password: string;
+    public password: string | undefined;
 }

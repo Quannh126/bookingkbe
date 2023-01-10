@@ -26,6 +26,9 @@ const LineSchema = new Schema<ILine & mongoose.Document>({
         type: String,
         required: true,
     },
+    status: {
+        type: String,
+    },
 });
 const Line = model<ILine & mongoose.Document>("Lines", LineSchema);
 export default Line;

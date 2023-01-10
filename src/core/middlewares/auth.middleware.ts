@@ -3,7 +3,7 @@ import { Request, NextFunction, Response } from "express";
 import jwt from "jsonwebtoken";
 const authMiddleware = (req: Request, res: Response, next: NextFunction) => {
     let token = req.header("Authorization") || req.header("x-access-token");
-
+    // console.log()
     if (!token) {
         return res
             .status(401)

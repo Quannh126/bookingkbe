@@ -13,11 +13,11 @@ class AuthService {
         if (isEmptyObject(model)) {
             throw new HttpException(400, "Model is empty");
         }
-        const user = await this.userModel.findOne({ email: model.email });
+        const user = await this.userModel.findOne({ username: model.username });
         if (!user) {
             throw new HttpException(409, `Email not exist`);
         }
-        console.log(model.password, +"---" + user.password);
+        console.log(model.password + "---" + user.password);
         const isMatchPassword = await bcryptjs.compare(
             model.password,
             user.password
@@ -29,13 +29,13 @@ class AuthService {
     }
 
     public async getCurrentUser(uid: string): Promise<IProfile> {
-        let user = await this.userModel.findById(uid);
+        let user = await this.userModel.findById({ _id: uid });
         if (!user) {
             throw new HttpException(404, "User is not exists");
         }
         return {
             phone: user.phone,
-            name: user.fullname,
+            fullname: user.fullname,
             avatar: user.avatar,
             username: user.username,
         };

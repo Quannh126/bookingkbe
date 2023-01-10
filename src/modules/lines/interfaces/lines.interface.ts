@@ -4,4 +4,5 @@ export default interface ILine {
     departure: string;
     to: string;
     from: string;
+    status?: string;
 }
