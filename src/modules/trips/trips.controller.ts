@@ -13,8 +13,8 @@ export default class TripController {
     ) => {
         try {
             const data: CreateTripDTO = req.body;
-            const carid: string = req.params.carid;
-            const listTrip = await this.tripService.addTrip(carid, data);
+            //const carid: string = req.params.carid;
+            const listTrip = await this.tripService.addTrip(data);
             res.status(201).json(listTrip);
         } catch (error) {
             next(error);
@@ -32,14 +32,14 @@ export default class TripController {
             next(error);
         }
     };
-    public getListTrip = async (
+    public getTrip = async (
         req: Request,
         res: Response,
         next: NextFunction
     ) => {
         try {
-            const carid: string = req.params.carid;
-            const listTrip = await this.tripService.getListTrip(carid);
+            const trip_id: string = req.params.trip_id;
+            const listTrip = await this.tripService.getTripDetaul(trip_id);
             res.status(200).json(listTrip);
         } catch (error) {
             next(error);
@@ -54,7 +54,7 @@ export default class TripController {
         try {
             const tripid = req.body;
             const carid = req.params.carid;
-            const result = await this.tripService.removeTrip(carid, tripid);
+            const result = await this.tripService.deleteTrip(tripid);
             res.status(200).json(result);
         } catch (error) {
             next(error);
@@ -67,7 +67,7 @@ export default class TripController {
     ) => {
         try {
             const carid = req.params.carid;
-            const data: ITrip = req.body;
+            const data: CreateTripDTO = req.body;
             const result = await this.tripService.updateTrip(carid, data);
             res.status(200).json(result);
         } catch (error) {

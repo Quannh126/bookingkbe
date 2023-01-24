@@ -24,6 +24,10 @@ const CarSchema = new Schema<ICar & mongoose.Document>({
         type: String,
         required: false,
     },
+    driver_id: {
+        type: String,
+        required: false,
+    },
     comment: [
         {
             user: {

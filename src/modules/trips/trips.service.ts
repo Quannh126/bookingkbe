@@ -1,75 +1,78 @@
 import { HttpException } from "@core/exceptions";
-import { Car, ICar } from "@modules/cars";
+import { isEmptyObject } from "@core/utils/helper";
+import { Car } from "@modules/cars";
+import { ITrip, Trip } from "@modules/trips";
 import CreateTripDTO from "./dto/create_trips.dto";
-import ITrip from "./interfaces/trip.interface";
+// import UpdateTripDTO from "./dto/update_trip.dto";
 
 export default class TripService {
+    public tripModel = Trip;
     public carModel = Car;
-    public async getAllTrip(): Promise<ICar[]> {
-        const cars = await this.carModel.find({}).exec();
-        if (!cars) {
-            return [];
+
+    public async getAllTrip(): Promise<ITrip[]> {
+        const trips = await this.tripModel.find({}).exec();
+        if (!trips) {
+            return [] as ITrip[];
         }
-        return cars;
+        return trips;
     }
-    // public async getListTrip(carid: string): Promise<ITrip[]> {
-    //     const car = await this.carModel.findById(carid);
-    //     if (!car) {
-    //         return [];
-    //     }
-    //     return car.trips;
-    // }
-    // public async addTrip(carid: string, data: CreateTripDTO): Promise<ITrip[]> {
-    //     const car = await this.carModel.findById(carid).exec();
-    //     if (!car) {
-    //         throw new HttpException(400, "Car not found");
-    //     }
 
-    //     const newTrip = {
-    //         arrival: data.arrival,
-    //         departure: data.departure,
-    //         to: data.to,
-    //         from: data.from,
-    //         fare: data.fare,
-    //     };
+    public async addTrip(data: CreateTripDTO): Promise<ITrip> {
+        if (isEmptyObject(data)) {
+            throw new HttpException(400, "Data is empty");
+        }
+        const carDetail = await this.carModel
+            .findOne({ id: data.car_id })
+            .exec();
+        if (!carDetail) {
+        }
+        let dataCreate = {
+            pickup_point: data.pickup_point,
+            dropoff_point: data.dropoff_point,
+            car: carDetail,
+            departure_time: data.departure_time,
+            destination_time: data.destination_time,
+            duration: data.duration,
+            seats_booked: [],
+            fare: data.fare,
+            sell_type: data.sell_type,
+        };
 
-    //     car.trips.unshift(newTrip as ITrip);
-    //     await car.save();
-    //     return car.trips;
-    // }
+        const trip = await this.tripModel.create(dataCreate);
+        if (!trip) {
+            throw new HttpException(400, "Faile Create");
+        }
+        return trip;
+    }
 
-    // public async removeTrip(carid: string, tripid: string): Promise<ITrip[]> {
-    //     const car = await this.carModel.findById(carid).exec();
-    //     if (!car) {
-    //         throw new HttpException(400, "Car not found");
-    //     }
-    //     const trip = car.trips.find((c: ITrip) => c._id === tripid);
-    //     if (!trip) {
-    //         throw new HttpException(400, "Trip not found");
-    //     }
-    //     car.trips = car.trips.filter(({ _id }) => _id !== tripid);
-    //     await car.save();
-    //     return car.trips;
-    // }
+    public async getTripDetaul(trip_id: string): Promise<ITrip> {
+        const trip = await this.tripModel.findOne({ _id: trip_id });
+        if (!trip) {
+            throw new HttpException(400, "Cant find this");
+        }
+        return trip;
+    }
 
-    // public async updateTrip(
-    //     carid: string,
+    public async deleteTrip(trip_id: string): Promise<ITrip> {
+        const trip = await this.tripModel.findOneAndDelete({ _id: trip_id });
+        if (!trip) {
+            throw new HttpException(400, "Cant find this");
+        }
+        return trip;
+    }
 
-    //     data: ITrip
-    // ): Promise<ITrip[]> {
-    //     const car = await this.carModel.findById(carid).exec();
-    //     if (!car) {
-    //         throw new HttpException(400, "Car not found");
-    //     }
-    //     const trip = car.trips.find((c: ITrip) => c._id === data._id);
-    //     if (!trip) {
-    //         throw new HttpException(400, "Trip not found");
-    //     }
+    public async updateTrip(
+        trip_id: string,
+        data: CreateTripDTO
+    ): Promise<ITrip> {
+        const trip = await this.tripModel.findOneAndUpdate(
+            { _id: trip_id },
+            { ...data }
+        );
+        if (!trip) {
+            throw new HttpException(400, "Cant find this");
+        }
 
-    //     const updateTrip = { ...trip, ...data };
-    //     car.trips = car.trips.filter(({ _id }) => _id !== data._id);
-    //     car.trips.unshift(updateTrip as ITrip);
-    //     await car.save();
-    //     return car.trips;
-    // }
+        return trip;
+    }
 }

@@ -1,6 +1,6 @@
 import { IsNotEmpty } from "class-validator";
 
-export default class CreateLineDTO {
+export default class CreateLocationDTO {
     @IsNotEmpty()
     public arrival: string | undefined;
 

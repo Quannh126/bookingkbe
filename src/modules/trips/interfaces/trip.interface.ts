@@ -1,19 +1,20 @@
-export default interface ITrip {
-    _id: string;
-    line_id: string;
-    phone1: string;
-    phone2: string;
-    driver1id: string;
-    driver2id: string;
-    seatsBooked: number[];
-    fare: String;
-    imagePath: String;
-}
+import { ICar } from "@modules/cars";
 
-interface ILine {
-    name_line: string;
-    arrival: string;
-    departure: string;
-    to: string;
-    from: string;
+export default interface ITrip {
+    pickup_point: Array<IPointDetail>;
+    dropoff_point: Array<IPointDetail>;
+    car: ICar;
+    departure_time: string;
+    destination_time: string;
+    duration: number;
+    seats_booked: Array<number>;
+    fare: number;
+    sell_type: string;
+}
+export interface IPointDetail {
+    province_id: number;
+    district_id: number;
+    point_id: number;
+    name: string;
+    address: string;
 }

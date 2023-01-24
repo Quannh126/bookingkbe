@@ -16,20 +16,20 @@ export default class TripsRoute implements Route {
     }
     private initializeRoutes() {
         this.router.post(
-            this.path + "/:carid",
+            this.path,
             // authMiddleware,
             validateMiddleware(CreateTripDTO, true),
             this.tripController.addTrip
         );
-        this.router.get(this.path + "/:carid", this.tripController.getListTrip);
+        this.router.get(this.path + "/:trip_id", this.tripController.getTrip);
         this.router.get(this.path, this.tripController.getAllTrip);
         this.router.delete(
-            this.path + "/:carid",
+            this.path + "/:trip_id",
             //authMiddleware,
             this.tripController.deleteTrip
         );
         this.router.put(
-            this.path + "/:carid",
+            this.path + "/:trip_id",
             // authMiddleware,
             validateMiddleware(CreateTripDTO, true),
             this.tripController.updateTrip

@@ -3,9 +3,12 @@ export default interface ICar {
     typeCar: string;
     detail: string;
     imagePath: string;
+    licensePlate: string;
     capacity: string;
     description: string;
-    comment: IComment[];
+    driver_id: string;
+    driver2_id: string;
+    comment: Array<IComment>;
     status: string;
 }
 export interface IComment {

@@ -7,14 +7,16 @@ import { AuthRoute } from "@modules/auth";
 import { CarsRoute } from "@modules/cars";
 import { TripsRoute } from "@modules/trips";
 import { LineRoute } from "@modules/lines";
+import LocationRoute from "@modules/location/location.route";
 validateEnv();
 const routes = [
     new IndexRoute(),
     new UserRoute(),
     new AuthRoute(),
     new CarsRoute(),
-    //new TripsRoute(),
-    new LineRoute(),
+    new TripsRoute(),
+    //new LineRoute(),
+    new LocationRoute(),
 ];
 const app = new App(routes);
 
