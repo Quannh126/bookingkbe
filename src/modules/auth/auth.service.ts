@@ -44,7 +44,7 @@ class AuthService {
     private createToken(user: IUser): TokenData {
         const dataToken: DataStoredInToken = { id: user._id };
         const secret: string = process.env.JWT_KEY!;
-        const expiresIn: number = 7200;
+        const expiresIn: number = 7200000;
         const now = new Date().getTime();
         let expiredAt: number = expiresIn + now;
         return {

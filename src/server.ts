@@ -8,6 +8,9 @@ import { CarsRoute } from "@modules/cars";
 import { TripsRoute } from "@modules/trips";
 import { LineRoute } from "@modules/lines";
 import LocationRoute from "@modules/location/location.route";
+import { CustomerRoute } from "@modules/customer";
+import { BookingRoute } from "@modules/book";
+import { TestsRoute } from "@modules/testquery/cars";
 validateEnv();
 const routes = [
     new IndexRoute(),
@@ -17,6 +20,9 @@ const routes = [
     new TripsRoute(),
     //new LineRoute(),
     new LocationRoute(),
+    new CustomerRoute(),
+    new BookingRoute(),
+    new TestsRoute(),
 ];
 const app = new App(routes);
 

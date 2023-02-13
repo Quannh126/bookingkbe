@@ -21,11 +21,11 @@ export default class CarsRoute implements Route {
             this.carController.addCar
         );
         this.router.get(
-            this.path + "/listNameCars",
+            this.path + "/carsyettostart",
             this.carController.getListNameCars
         );
         this.router.get(this.path, this.carController.getAllCar);
-        this.router.get(this.path + "/:carid", this.carController.getAllCar);
+        this.router.get(this.path + "/:carid", this.carController.getCarById);
         this.router.get(
             this.path + "/paging/:page",
             this.carController.getAllPaging

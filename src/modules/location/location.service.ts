@@ -1,30 +1,35 @@
 import { Location, ILocation } from "@modules/location";
 import { isEmptyObject } from "@core/utils/helper";
 import { HttpException } from "@core/exceptions";
-import { IPagination, KeyValue } from "@core/interfaces";
+import { IPagination, NameValue } from "@core/interfaces";
 import AddPointDTO from "./dto/add_point.dto";
 import { IDistrict, IPoint } from "./interfaces/location.interface";
 import CreateLocationDTO from "./dto/create_location.dto";
 import AddDistrictDTO from "./dto/add_district.dto";
 import AddLocationDTO from "./dto/add_location.dto";
+import e from "express";
 
 // import ILineDetail from "./interfaces/carDetail.interface";
 
 class LocationService {
     public locationModel = Location;
 
-    public async addPoint(data: AddPointDTO): Promise<ILocation> {
+    public async addPoint(
+        data: AddPointDTO,
+        province_id: String,
+        district_id: String
+    ): Promise<ILocation> {
         if (isEmptyObject(data)) {
             throw new HttpException(400, "Model is empty");
         }
         const location = await this.locationModel.findOne({
-            code: data.province_id,
+            code: Number(province_id),
         });
         if (!location) {
             throw new HttpException(400, "Location is empty");
         }
-        const arr = location.district[data.district_id!].point;
-        const { length } = location.district[Number(data.district_id)].point;
+        const arr = location.district[Number(district_id) - 1].point;
+        const { length } = location.district[Number(district_id) - 1].point;
         const id = length + 1;
         const found = arr.some((item: IPoint) => item.name === data.name);
         let dataPush: IPoint = {
@@ -32,16 +37,18 @@ class LocationService {
             name: data.name!,
             address: data.address!,
         };
-        if (!found) location.district[data.district_id!].point.push(dataPush);
-        const result = await this.locationModel.findOneAndReplace(
-            { code: data.province_id },
-            { ...location }
-        );
-        if (!result) {
-            throw new HttpException(400, "Error");
+        if (!found) {
+            const result = await this.locationModel.findOneAndUpdate(
+                { code: province_id, "district.code": district_id },
+                { $push: { "district.$.point": dataPush } }
+            );
+            if (!result) {
+                throw new HttpException(400, "Error");
+            }
+            return result;
+        } else {
+            throw new HttpException(409, "Item exist");
         }
-
-        return result;
     }
 
     public async addLocation(data: AddLocationDTO): Promise<ILocation> {
@@ -58,12 +65,15 @@ class LocationService {
         const result = await this.locationModel.create(dataCreate);
         return result;
     }
-    public async addDistrict(data: AddDistrictDTO): Promise<ILocation> {
+    public async addDistrict(
+        data: AddDistrictDTO,
+        province_id: String
+    ): Promise<ILocation> {
         if (isEmptyObject(data)) {
             throw new HttpException(400, "Model is empty");
         }
         const location = await this.locationModel.findOne({
-            code: data.province_id,
+            code: province_id,
         });
         if (!location) {
             throw new HttpException(400, "Location is empty");
@@ -75,22 +85,25 @@ class LocationService {
             code: id,
             division_type: data.district_type!,
             name: data.district_name!,
-            province_code: data.province_id!,
+            province_code: Number(province_id),
             point: [],
         };
         const found = arr.some(
             (item: IDistrict) => item.name === data.district_name
         );
-        if (!found) location.district.push(dataPush);
-        const result = await this.locationModel.findOneAndReplace(
-            { code: data.province_id },
-            { ...location }
-        );
-        if (!result) {
-            throw new HttpException(400, "Error");
-        }
+        if (!found) {
+            const result = await this.locationModel.findOneAndUpdate(
+                { code: province_id },
+                { $push: { district: dataPush } }
+            );
+            if (!result) {
+                throw new HttpException(400, "Error");
+            }
 
-        return result;
+            return result;
+        } else {
+            throw new HttpException(409, "Item exist");
+        }
     }
     public async getAllPoint(
         province_id: number,
@@ -111,7 +124,7 @@ class LocationService {
     public async getListPoint(
         province_id: number,
         district_id: number
-    ): Promise<KeyValue[]> {
+    ): Promise<Array<NameValue>> {
         if (!province_id || !district_id) {
             return [];
         }
@@ -122,35 +135,37 @@ class LocationService {
             return [];
         }
         const listPoint = list.district[district_id].point;
-        const result = listPoint.map(({ code: key, name: value }) => ({
-            key: key.toString(),
-            value,
+        const result = listPoint.map(({ code: value, name: name }) => ({
+            value: value.toString(),
+            name,
         }));
         return result;
     }
-    public async getListProvince(): Promise<KeyValue[]> {
+    public async getListProvince(): Promise<Array<NameValue>> {
         const list = await this.locationModel
             .find({}, { code: 1, name: 1 })
             .exec();
         if (!list) {
             return [];
         }
-        let result = await list.map(({ code: key, name: value }) => ({
-            key: key.toString(),
-            value,
+        let result = await list.map(({ code: value, name: name }) => ({
+            value: value.toString(),
+            name,
         }));
         //result.push({ key: "", value: "" });
         return result;
     }
 
-    public async getListDistrict(province_id: number): Promise<KeyValue[]> {
+    public async getListDistrict(
+        province_id: number
+    ): Promise<Array<NameValue>> {
         const list = await this.locationModel
             .findOne({ code: province_id })
             .exec();
         if (!list) return [];
-        const result = list.district.map(({ code: key, name: value }) => ({
-            key: key.toString(),
-            value,
+        const result = list.district.map(({ code: value, name: name }) => ({
+            value: value.toString(),
+            name,
         }));
         return result;
     }
@@ -213,33 +228,95 @@ class LocationService {
         return reuslt;
     }
     public async deletePoint(
-        province_id: number,
-        point_id: number,
-        district_id: number
+        province_id: string,
+        point_id: string,
+        district_id: string
     ): Promise<ILocation> {
-        const location = await this.locationModel.findOne({
-            code: province_id,
-        });
-        if (!location) {
-            throw new HttpException(400, "Id not exist");
-        }
-        const arr = location.district[Number(district_id)].point;
-        const { length } = arr;
-        let i = length;
-        while (i--) {
-            if (arr[i].code === Number(point_id)) {
-                location.district[Number(district_id)].point.splice(i, 1);
-                break;
-            }
-        }
-        const result = await this.locationModel.findOneAndReplace(
+        const result = await this.locationModel.findOneAndUpdate(
             {
                 code: province_id,
+                "district.code": district_id,
             },
-            { ...location }
+            { $pull: { district: { point: { code: point_id } } } }
+        );
+        if (!result) {
+            throw new HttpException(400, "Id not exist");
+        }
+        return result;
+    }
+
+    public async deleteDistrict(
+        province_id: string,
+        district_id: string
+    ): Promise<ILocation> {
+        const result = await this.locationModel.findOneAndUpdate(
+            {
+                code: province_id,
+                "district.code": district_id,
+            },
+            { $pull: { district: { code: district_id } } }
         );
 
-        return result!;
+        if (!result) {
+            throw new HttpException(400, "Id not exist");
+        }
+        return result;
+    }
+    public async getDetailProvince(
+        province_id: string
+    ): Promise<Array<Array<NameValue>> | {}> {
+        const location = await this.locationModel
+            .findOne({ code: province_id })
+            .exec();
+        if (!location) return {};
+        let listOption = [] as Array<Array<NameValue>>;
+        listOption.push([]);
+        location.district.forEach((district: IDistrict) => {
+            let option = district.point.map(({ code: value, name: name }) => ({
+                value: value.toString(),
+                name,
+            }));
+            listOption.push(option);
+        });
+        console.log(listOption);
+
+        return listOption;
+    }
+    public async getPointByRoute(route: string): Promise<{
+        dropoff: Array<NameValue>;
+        pickup: Array<NameValue>;
+    }> {
+        const data = route.split("-");
+
+        const listProvince1 = await this.locationModel
+            .findOne({ code: data[0] })
+            .exec();
+        const listProvince2 = await this.locationModel
+            .findOne({ code: data[1] })
+            .exec();
+        if (!listProvince1 || !listProvince2) {
+            return { dropoff: [], pickup: [] };
+        }
+        let listDropoff = [{ name: "-Tất cả-", value: "" }] as Array<NameValue>;
+        let listPickup = [{ name: "-Tất cả-", value: "" }] as Array<NameValue>;
+        listProvince2.district.forEach((district: IDistrict) => {
+            const listPoint = district.point;
+            let resultMap = listPoint.map(({ code: value, name: name }) => ({
+                value: district.code + "-" + value,
+                name: district.name + "-" + name,
+            }));
+            listDropoff.push(...resultMap);
+        });
+        listProvince1.district.forEach((district: IDistrict) => {
+            const listPoint = district.point;
+            let resultMap = listPoint.map(({ code: value, name: name }) => ({
+                value: district.code + "-" + value,
+                name: district.name + "-" + name,
+            }));
+            listPickup.push(...resultMap);
+        });
+
+        return { dropoff: listDropoff, pickup: listPickup };
     }
 }
 export default LocationService;

@@ -1,8 +1,9 @@
 import { Car, ICar, ICarDetail } from "@modules/cars";
 import { isEmptyObject } from "@core/utils/helper";
 import { HttpException } from "@core/exceptions";
-import { IPagination, KeyValue } from "@core/interfaces";
+import { IPagination, NameValue } from "@core/interfaces";
 import { AddCarDto, UpdateCarDto } from "@modules/cars/dto";
+import { ICarsYetToStart } from "./interfaces/carsYetToStart";
 // import ICarDetail from "./interfaces/carDetail.interface";
 
 class CarsService {
@@ -14,31 +15,37 @@ class CarsService {
         }
         await this.carModel.create({
             ...model,
-            imagePath: "",
-            trips: [],
-            policy: "",
-            date: Date.now(),
         });
     }
-    public async getListNameCars(): Promise<KeyValue[]> {
-        const list = await this.carModel.find({}, { _id: 1, name: 1 }).exec();
-        let result = list.map(({ _id: key, name: value }) => ({ key, value }));
-        return result;
+    public async getCarsAlready(): Promise<Array<NameValue>> {
+        const list = await this.carModel
+            .find(
+                { status: "Yet To Start" }
+                // {
+                //     _id: 1,
+                //     name: 1,
+                //     // driver_name: 1,
+                //     // license_plate: 1,
+                //     // phonenumber: 1,
+                // }
+            )
+            .exec();
+        let configOption = list.map(({ _id: value, name: name }) => ({
+            value,
+            name,
+        }));
+        // let listInfo = list.map(
+        //     ({ driver_name, license_plate, phonenumber }) => ({
+        //         phonenumber,
+        //         license_plate,
+        //         driver_name,
+        //     })
+        // );
+        return configOption;
     }
     public async getAllCar(): Promise<ICarDetail[]> {
         const cars = await this.carModel
-            .find(
-                {},
-                {
-                    _id: 1,
-                    name: 1,
-                    typeCar: 1,
-                    imagePath: 1,
-                    description: 1,
-                    capacity: 1,
-                    detail: 1,
-                }
-            )
+            .find({})
             .exec()
             .catch((err) => {
                 throw new HttpException(405, err.message);
@@ -101,7 +108,7 @@ class CarsService {
         return deleteCar;
     }
 
-    public async updateCar(data: ICarDetail): Promise<ICarDetail> {
+    public async updateCar(data: UpdateCarDto): Promise<ICarDetail> {
         if (isEmptyObject(data)) {
             throw new HttpException(400, "Model is empty");
         }
@@ -109,7 +116,7 @@ class CarsService {
             ...data,
         });
         if (!result) {
-            throw new HttpException(409, "Id valid");
+            throw new HttpException(400, "Id valid");
         }
         return result;
     }

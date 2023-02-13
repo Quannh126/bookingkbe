@@ -2,8 +2,8 @@ import { IsNotEmpty } from "class-validator";
 import { IPointDetail } from "../interfaces/trip.interface";
 
 export default class UpdateTripDTO {
-    // @IsNotEmpty()
-    // public _id: string | undefined;
+    @IsNotEmpty()
+    public _id: string | undefined;
     @IsNotEmpty()
     public pickup_point!: Array<IPointDetail>;
     @IsNotEmpty()

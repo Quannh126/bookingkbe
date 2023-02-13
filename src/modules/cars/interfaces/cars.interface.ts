@@ -1,13 +1,13 @@
 export default interface ICar {
     name: string;
-    typeCar: string;
-    detail: string;
-    imagePath: string;
-    licensePlate: string;
+    type_car: string;
+
+    // attachment: Array<File>;
+    license_plate: string;
     capacity: string;
     description: string;
-    driver_id: string;
-    driver2_id: string;
+    driver_name: string;
+    phonenumber: string;
     comment: Array<IComment>;
     status: string;
 }

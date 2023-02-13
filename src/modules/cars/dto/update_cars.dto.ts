@@ -1,32 +1,23 @@
 import { IsNotEmpty } from "class-validator";
 
 export default class UpdateCarDto {
-    constructor(
-        _id: string,
-        name: string,
-        typeCar: string,
-        capacity: string,
-        status: string,
-        description: string,
-        imagePath: string
-    ) {
-        this._id = _id;
-        this.name = name;
-        this.typeCar = typeCar;
-        this.imagePath = imagePath;
-        this.capacity = capacity;
-        this.status = status;
-        this.description = description;
-    }
+    public _id?: string | undefined;
+    @IsNotEmpty()
+    public name: string | undefined;
+    @IsNotEmpty()
+    public type_car: string | undefined;
 
+    //@IsNotEmpty()
+    // attachment: Array<File>;
+    public license_plate: string | undefined;
     @IsNotEmpty()
-    public capacity: string;
+    public capacity: string | undefined;
+
+    public description: string | undefined;
     @IsNotEmpty()
-    public typeCar: string;
+    public driver_name: string | undefined;
     @IsNotEmpty()
-    public name: string;
-    public _id: string;
-    public description: string;
-    public status: string;
-    public imagePath: string;
+    public phonenumber: string | undefined;
+    @IsNotEmpty()
+    public status: string | undefined;
 }

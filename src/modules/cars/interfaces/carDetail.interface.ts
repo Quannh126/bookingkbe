@@ -1,10 +1,12 @@
 export default interface ICarDetail {
-    _id: string;
+    _id?: string;
     name: string;
-    typeCar: string;
-    description: string;
+    type_car: string;
+    // attachment: Array<File>;
+    license_plate: string;
     capacity: string;
-    imagePath: string;
-    detail: string;
+    description: string;
+    driver_name: string;
+    phonenumber: string;
     status: string;
 }

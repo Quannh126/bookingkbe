@@ -3,7 +3,7 @@ import { TripService } from "@modules/trips";
 
 import CreateTripDTO from "./dto/create_trips.dto";
 import ITrip from "./interfaces/trip.interface";
-
+import UpdateTripDTO from "./dto/update_trip.dto";
 export default class TripController {
     private tripService = new TripService();
     public addTrip = async (
@@ -52,9 +52,8 @@ export default class TripController {
         next: NextFunction
     ) => {
         try {
-            const tripid = req.body;
-            const carid = req.params.carid;
-            const result = await this.tripService.deleteTrip(tripid);
+            const { trip_id } = req.params;
+            const result = await this.tripService.deleteTrip(trip_id);
             res.status(200).json(result);
         } catch (error) {
             next(error);
@@ -66,9 +65,46 @@ export default class TripController {
         next: NextFunction
     ) => {
         try {
-            const carid = req.params.carid;
-            const data: CreateTripDTO = req.body;
-            const result = await this.tripService.updateTrip(carid, data);
+            const data: UpdateTripDTO = req.body;
+            const result = await this.tripService.updateTrip(data);
+            res.status(200).json(result);
+        } catch (error) {
+            next(error);
+        }
+    };
+    public getSearchTrip = async (
+        req: Request,
+        res: Response,
+        next: NextFunction
+    ) => {
+        try {
+            // const { route, journey_date, pickup_point, dropoff_point } =
+            //     req.query;
+            const route = req.query.route as string;
+
+            const pickup_point = req.query.pickup_point as string;
+            const dropoff_point = req.query.dropoff_point as string;
+
+            const result = await this.tripService.getSearchTrip(
+                route,
+                pickup_point,
+                dropoff_point
+            );
+            res.status(200).json(result);
+        } catch (error) {
+            next(error);
+        }
+    };
+    public getPickupAndDropoffOption = async (
+        req: Request,
+        res: Response,
+        next: NextFunction
+    ) => {
+        try {
+            const { trip_id } = req.params;
+            const result = await this.tripService.getPickupAndDropoffOption(
+                trip_id
+            );
             res.status(200).json(result);
         } catch (error) {
             next(error);

@@ -1,30 +1,21 @@
 import { IsNotEmpty } from "class-validator";
 
 export default class AddCarDto {
-    constructor(
-        name: string,
-        typeCar: string,
-        capacity: string,
-        status: string,
-        description: string,
-        imagePath: string
-    ) {
-        this.name = name;
-        this.typeCar = typeCar;
-        this.imagePath = imagePath;
-        this.capacity = capacity;
-        this.status = status;
-        this.description = description;
-    }
+    public _id?: string | undefined;
+    @IsNotEmpty()
+    public name: string | undefined;
+    @IsNotEmpty()
+    public type_car: string | undefined;
+    @IsNotEmpty()
 
+    // attachment: Array<File>;
+    public license_plate: string | undefined;
     @IsNotEmpty()
-    public capacity: string;
-    @IsNotEmpty()
-    public typeCar: string;
-    @IsNotEmpty()
-    public name: string;
+    public capacity: string | undefined;
 
-    public description: string;
-    public status: string;
-    public imagePath: string;
+    public description: string | undefined;
+    @IsNotEmpty()
+    public driver_name: string | undefined;
+    @IsNotEmpty()
+    public phonenumber: string | undefined;
 }

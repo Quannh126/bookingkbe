@@ -5,17 +5,25 @@ const CarSchema = new Schema<ICar & mongoose.Document>({
         type: String,
         required: true,
     },
-    typeCar: {
+    type_car: {
         type: String,
         required: true,
     },
-    imagePath: {
+    license_plate: {
         type: String,
-        required: false,
+        required: true,
     },
     capacity: {
         type: String,
-        required: false,
+        required: true,
+    },
+    driver_name: {
+        type: String,
+        required: true,
+    },
+    phonenumber: {
+        type: String,
+        required: true,
     },
     description: {
         type: String,
@@ -23,11 +31,9 @@ const CarSchema = new Schema<ICar & mongoose.Document>({
     status: {
         type: String,
         required: false,
+        default: "Yet To Start",
     },
-    driver_id: {
-        type: String,
-        required: false,
-    },
+
     comment: [
         {
             user: {

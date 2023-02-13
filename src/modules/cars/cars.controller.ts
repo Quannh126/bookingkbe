@@ -10,7 +10,7 @@ export default class CarController {
         try {
             const model: AddCarDto = req.body;
             const car = await this.carService.addCar(model);
-            res.status(201).json(car);
+            res.status(201).json({ msg: "success" });
         } catch (error) {
             next(error);
         }
@@ -21,8 +21,8 @@ export default class CarController {
         next: NextFunction
     ) => {
         try {
-            const list = await this.carService.getListNameCars();
-            res.status(200).json(list);
+            const data = await this.carService.getCarsAlready();
+            res.status(200).json(data);
         } catch (error) {
             next(error);
         }
