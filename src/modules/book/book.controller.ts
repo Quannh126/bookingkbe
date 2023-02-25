@@ -6,6 +6,7 @@ import UpdateCarDto from "./dto/update_book.dto";
 import BookingService from "./book.services";
 import AddBookingDto from "./dto/add_booking.dto";
 import { convertDateToString, Logger } from "@core/utils";
+import SwapSeatDTO from "./dto/seat_swap.dto";
 
 export default class BookingController {
     private bookingService = new BookingService();
@@ -61,6 +62,36 @@ export default class BookingController {
             );
             res.status(200).json(booking);
             // Logger.info(booking);
+        } catch (error) {
+            next(error);
+        }
+    };
+
+    public updateBooking = async (
+        req: Request,
+        res: Response,
+        next: NextFunction
+    ) => {
+        try {
+            const model: AddBookingDto = req.body;
+            const booking = await this.bookingService.updateBooking(model);
+            res.status(201).json({ msg: "success" });
+            Logger.info(booking);
+        } catch (error) {
+            next(error);
+        }
+    };
+
+    public swapSeat = async (
+        req: Request,
+        res: Response,
+        next: NextFunction
+    ) => {
+        try {
+            const model: SwapSeatDTO = req.body;
+            const booking = await this.bookingService.swapSeat(model);
+            res.status(201).json({ msg: "success" });
+            Logger.info(booking);
         } catch (error) {
             next(error);
         }

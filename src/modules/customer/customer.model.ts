@@ -7,7 +7,7 @@ const CustomerSchema = new Schema<ICustomer & mongoose.Document>({
         required: true,
     },
     phonenumber: {
-        type: Number,
+        type: String,
         required: true,
         unique: true,
     },

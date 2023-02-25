@@ -6,14 +6,13 @@ import ICar from "./interfaces/book.interface";
 const CustomerSchema = new Schema<ICustomer>({
     _id: {
         type: String,
-        required: true,
     },
     name: {
         type: String,
         required: true,
     },
     phonenumber: {
-        type: Number,
+        type: String,
         required: true,
     },
     email: {

@@ -6,6 +6,8 @@ export default interface IBooking {
     trip_id: string;
     customer: ICustomer;
     seat: string;
+    // seats_booked: [Number];
+    // amount_seat: Number;
     pickup_point: IPointDetail;
     dropoff_point: IPointDetail;
     note: string;

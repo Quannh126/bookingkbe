@@ -1,14 +1,10 @@
+import { ICustomer } from "@modules/customer";
 import { IsNotEmpty } from "class-validator";
-type Customer = {
-    email: string;
-    name: string;
-    phonenumber: string;
-    times_booking: string;
-    _id: string;
-};
+
 export default class AddBookingDto {
+    list_id?: string | undefined;
     @IsNotEmpty()
-    public customer: Customer | undefined;
+    public customer: ICustomer | undefined;
     @IsNotEmpty()
     public fare: string | undefined;
     @IsNotEmpty()
