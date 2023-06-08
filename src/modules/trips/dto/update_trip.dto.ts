@@ -1,3 +1,4 @@
+import { ICar } from "@modules/cars";
 import { IsNotEmpty } from "class-validator";
 import { IPointDetail } from "../interfaces/trip.interface";
 
@@ -22,4 +23,5 @@ export default class UpdateTripDTO {
     public fare: string | undefined;
     @IsNotEmpty()
     public sell_type: string | undefined;
+    public car: ICar | undefined;
 }

@@ -10,7 +10,7 @@ export default class CarController {
         try {
             const model: AddCarDto = req.body;
             const car = await this.carService.addCar(model);
-            res.status(201).json({ msg: "success" });
+            res.status(201).json(car);
         } catch (error) {
             next(error);
         }

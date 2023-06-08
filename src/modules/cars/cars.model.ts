@@ -9,6 +9,10 @@ const CarSchema = new Schema<ICar & mongoose.Document>({
         type: String,
         required: true,
     },
+    imgPath: {
+        type: String,
+        default: "",
+    },
     license_plate: {
         type: String,
         required: true,

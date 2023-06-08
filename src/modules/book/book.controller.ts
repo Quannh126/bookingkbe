@@ -96,4 +96,23 @@ export default class BookingController {
             next(error);
         }
     };
+
+    public removeBooking = async (
+        req: Request,
+        res: Response,
+        next: NextFunction
+    ) => {
+        try {
+            const { trip_id, list_seat } = req.body;
+
+            const booking = await this.bookingService.removeBooking(
+                trip_id,
+                list_seat
+            );
+            res.status(201).json({ msg: "success" });
+            Logger.info(booking);
+        } catch (error) {
+            next(error);
+        }
+    };
 }

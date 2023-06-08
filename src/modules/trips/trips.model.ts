@@ -33,6 +33,10 @@ const CarSchema = new Schema<ICar>({
         type: String,
         required: true,
     },
+    imgPath: {
+        type: String,
+        required: true,
+    },
     phonenumber: {
         type: String,
         required: true,
@@ -86,6 +90,10 @@ const TripSchema = new Schema<ITrip & mongoose.Document>({
     sell_type: {
         type: String,
         required: true,
+    },
+    car_id: {
+        type: String,
+        require: true,
     },
 });
 const Trip = model<ITrip & mongoose.Document>("Trips", TripSchema);

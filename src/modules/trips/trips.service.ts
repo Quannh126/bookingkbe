@@ -45,6 +45,7 @@ export default class TripService {
             seats_booked: [],
             fare: data.fare,
             sell_type: data.sell_type,
+            car_id: data.car_id,
         };
 
         const trip = await this.tripModel.create(dataCreate);
@@ -73,6 +74,19 @@ export default class TripService {
     }
 
     public async updateTrip(data: UpdateTripDTO): Promise<ITrip> {
+        const olderCar = await this.carModel
+            .findOneAndUpdate(
+                { _id: data.car?._id },
+                { status: "Yet To Start" }
+            )
+            .exec();
+        const carData = await this.carModel.findById(data.car_id);
+
+        if (!carData || !olderCar) {
+            throw new HttpException(400, "Cant find car");
+        }
+
+        data.car = carData;
         const trip = await this.tripModel.findOneAndUpdate(
             { _id: data._id },
             { ...data }

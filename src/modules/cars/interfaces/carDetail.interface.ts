@@ -3,6 +3,7 @@ export default interface ICarDetail {
     name: string;
     type_car: string;
     // attachment: Array<File>;
+    imgPath: string;
     license_plate: string;
     capacity: string;
     description: string;

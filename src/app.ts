@@ -7,6 +7,7 @@ import cors from "cors";
 import morgan from "morgan";
 import { Logger } from "@core/utils";
 import { errorMiddleware } from "@core/middlewares";
+
 class App {
     public app: express.Application;
     public port: string | number;

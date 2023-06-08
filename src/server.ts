@@ -11,6 +11,7 @@ import LocationRoute from "@modules/location/location.route";
 import { CustomerRoute } from "@modules/customer";
 import { BookingRoute } from "@modules/book";
 import { TestsRoute } from "@modules/testquery/cars";
+import { UploadRoute } from "@modules/upload/users";
 validateEnv();
 const routes = [
     new IndexRoute(),
@@ -18,7 +19,7 @@ const routes = [
     new AuthRoute(),
     new CarsRoute(),
     new TripsRoute(),
-    //new LineRoute(),
+    new UploadRoute(),
     new LocationRoute(),
     new CustomerRoute(),
     new BookingRoute(),

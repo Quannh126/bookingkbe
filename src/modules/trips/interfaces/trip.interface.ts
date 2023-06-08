@@ -13,6 +13,7 @@ export default interface ITrip {
     seats_booked: Array<number>;
     fare: number;
     sell_type: string;
+    car_id: string;
 }
 export interface IPointDetail {
     district_id: number;

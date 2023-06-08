@@ -9,13 +9,14 @@ import { ICarsYetToStart } from "./interfaces/carsYetToStart";
 class CarsService {
     public carModel = Car;
 
-    public async addCar(model: AddCarDto): Promise<void> {
+    public async addCar(model: AddCarDto): Promise<ICarDetail> {
         if (isEmptyObject(model)) {
             throw new HttpException(400, "Model is empty");
         }
-        await this.carModel.create({
+        const result = await this.carModel.create({
             ...model,
         });
+        return result;
     }
     public async getCarsAlready(): Promise<Array<NameValue>> {
         const list = await this.carModel

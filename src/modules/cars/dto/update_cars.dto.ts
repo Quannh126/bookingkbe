@@ -12,7 +12,7 @@ export default class UpdateCarDto {
     public license_plate: string | undefined;
     @IsNotEmpty()
     public capacity: string | undefined;
-
+    public imgPath: string | undefined;
     public description: string | undefined;
     @IsNotEmpty()
     public driver_name: string | undefined;

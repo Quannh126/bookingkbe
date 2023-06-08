@@ -14,6 +14,8 @@ export default class AddCarDto {
     public capacity: string | undefined;
 
     public description: string | undefined;
+
+    public imgPath: string | undefined;
     @IsNotEmpty()
     public driver_name: string | undefined;
     @IsNotEmpty()
