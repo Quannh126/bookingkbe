@@ -2,6 +2,7 @@ import { NextFunction, Request, Response } from "express";
 import RegisterDto from "./dtos/register.dto";
 import UserService from "./users.service";
 import { TokenData } from "@modules/auth";
+import { AccessTokenData } from "@modules/auth/auth.interface";
 export default class UserController {
     private userService = new UserService();
     public register = async (
@@ -11,9 +12,8 @@ export default class UserController {
     ) => {
         try {
             const model: RegisterDto = req.body;
-            const tokenData: TokenData = await this.userService.createUser(
-                model
-            );
+            const tokenData: AccessTokenData =
+                await this.userService.createUser(model);
 
             res.status(201).json(tokenData);
         } catch (error) {

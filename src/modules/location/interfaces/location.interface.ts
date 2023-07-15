@@ -4,7 +4,14 @@ export default interface ILocation {
     division_type: string;
     district: Array<IDistrict>;
 }
-
+export interface ILocationGrouped {
+    header: string;
+    point: Location2[];
+}
+export interface Location2 {
+    name: string;
+    code_group: string;
+}
 export interface IDistrict {
     name: string;
     code: number;

@@ -5,7 +5,7 @@ import CreateLocationDTO from "./dto/create_location.dto";
 import AddDistrictDTO from "./dto/add_district.dto";
 
 export default class LocationController {
-    private locaitonService = new LocationService();
+    private locationService = new LocationService();
     public addPoint = async (
         req: Request,
         res: Response,
@@ -15,7 +15,7 @@ export default class LocationController {
             const data: AddPointDTO = req.body;
             const { province_id, district_id } = req.params;
             console.log(province_id, district_id, data);
-            await this.locaitonService.addPoint(data, province_id, district_id);
+            await this.locationService.addPoint(data, province_id, district_id);
             res.status(201).json({ msg: "Success" });
         } catch (error) {
             next(error);
@@ -23,7 +23,7 @@ export default class LocationController {
     };
     public getAll = async (req: Request, res: Response, next: NextFunction) => {
         try {
-            const listPoint = await this.locaitonService.getAllLocation();
+            const listPoint = await this.locationService.getAllLocation();
             res.status(200).json(listPoint);
         } catch (error) {
             next(error);
@@ -37,7 +37,7 @@ export default class LocationController {
     ) => {
         try {
             const { province_id, district_id } = req.params;
-            const listPoint = await this.locaitonService.getAllPoint(
+            const listPoint = await this.locationService.getAllPoint(
                 Number(province_id),
                 Number(district_id)
             );
@@ -54,7 +54,7 @@ export default class LocationController {
     ) => {
         try {
             const data: CreateLocationDTO = req.body;
-            const listLine = await this.locaitonService.addFullLocation(data);
+            const listLine = await this.locationService.addFullLocation(data);
             res.status(200).json(listLine);
         } catch (error) {
             next(error);
@@ -68,7 +68,7 @@ export default class LocationController {
     ) => {
         try {
             const { province_id, district_id } = req.params;
-            const result = await this.locaitonService.getListPoint(
+            const result = await this.locationService.getListPoint(
                 Number(province_id),
                 Number(district_id)
             );
@@ -84,13 +84,25 @@ export default class LocationController {
     ) => {
         try {
             // const data: CreateLineDTO = req.body;
-            const result = await this.locaitonService.getListProvince();
+            const result = await this.locationService.getListProvince();
             res.status(200).json(result);
         } catch (error) {
             next(error);
         }
     };
-
+    public getGroupedLocaltion = async (
+        req: Request,
+        res: Response,
+        next: NextFunction
+    ) => {
+        try {
+            // const data: CreateLineDTO = req.body;
+            const result = await this.locationService.getGroupedLocation();
+            res.status(200).json(result);
+        } catch (error) {
+            next(error);
+        }
+    };
     public getListDistrict = async (
         req: Request,
         res: Response,
@@ -98,7 +110,7 @@ export default class LocationController {
     ) => {
         try {
             const { province_id } = req.params;
-            const result = await this.locaitonService.getListDistrict(
+            const result = await this.locationService.getListDistrict(
                 Number(province_id)
             );
             res.status(200).json(result);
@@ -115,7 +127,7 @@ export default class LocationController {
         try {
             const { province_id } = req.params;
             const data: AddDistrictDTO = req.body;
-            const result = await this.locaitonService.addDistrict(
+            const result = await this.locationService.addDistrict(
                 data,
                 province_id
             );
@@ -133,11 +145,12 @@ export default class LocationController {
         try {
             const { province_id, district_id, point_id } = req.params;
 
-            const result = await this.locaitonService.deletePoint(
+            const result = await this.locationService.deletePoint(
                 province_id,
                 point_id,
                 district_id
             );
+
             res.status(200).json(result);
         } catch (error) {
             next(error);
@@ -152,7 +165,7 @@ export default class LocationController {
         try {
             const { province_id, district_id } = req.params;
 
-            const result = await this.locaitonService.deleteDistrict(
+            const result = await this.locationService.deleteDistrict(
                 province_id,
                 district_id
             );
@@ -169,7 +182,7 @@ export default class LocationController {
     ) => {
         try {
             const { province_id } = req.params;
-            const result = await this.locaitonService.getDetailProvince(
+            const result = await this.locationService.getDetailProvince(
                 province_id
             );
             res.status(200).json(result);
@@ -185,7 +198,7 @@ export default class LocationController {
     ) => {
         try {
             const { route } = req.params;
-            const result = await this.locaitonService.getPointByRoute(route);
+            const result = await this.locationService.getPointByRoute(route);
             res.status(200).json(result);
         } catch (error) {
             next(error);

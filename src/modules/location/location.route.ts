@@ -1,15 +1,20 @@
 import { Router } from "express";
 import { Route } from "@core/interfaces";
 
-import { authMiddleware, validateMiddleware } from "@core/middlewares";
+import {
+    authMiddleware,
+    validateMiddleware,
+    verifyRolesMiddleware,
+} from "@core/middlewares";
 import LocationController from "./location.controller";
 import CreateLineDTO from "./dto/add_point.dto";
 import CreateLocationDTO from "./dto/create_location.dto";
 import AddPointDTO from "./dto/add_point.dto";
 import AddDistrictDTO from "./dto/add_district.dto";
+import { rolesMap } from "@core/utils/roles";
 
 export default class LocationRoute implements Route {
-    public path = "/api/admin/locations";
+    public path = "/locations";
     public router = Router();
 
     public LocationController = new LocationController();
@@ -21,31 +26,36 @@ export default class LocationRoute implements Route {
         //1
         this.router.post(
             this.path,
-            //authMiddleware,
+            authMiddleware,
+            verifyRolesMiddleware(rolesMap[this.path]),
             validateMiddleware(CreateLocationDTO, true),
             this.LocationController.addLocation
         );
 
         this.router.get(
             this.path,
-            //authMiddleware,
+            authMiddleware,
+            verifyRolesMiddleware(rolesMap[this.path]),
             this.LocationController.getAll
         );
 
         this.router.delete(
             this.path + "/:province_id/:district_id/:point_id",
-            //authMiddleware,
+            authMiddleware,
+            verifyRolesMiddleware(rolesMap[this.path]),
             this.LocationController.removePoint
         );
         this.router.delete(
             this.path + "/:province_id/:district_id",
-            //authMiddleware,
+            authMiddleware,
+            verifyRolesMiddleware(rolesMap[this.path]),
             this.LocationController.removeDistrict
         );
         //4
         this.router.put(
             this.path + "/:province_id/:district_id",
-            // authMiddleware,
+            authMiddleware,
+            verifyRolesMiddleware(rolesMap[this.path]),
             validateMiddleware(AddPointDTO, true),
             this.LocationController.addPoint
         );
@@ -53,7 +63,8 @@ export default class LocationRoute implements Route {
         //4
         this.router.put(
             this.path + "/:province_id",
-            // authMiddleware,
+            authMiddleware,
+            verifyRolesMiddleware(rolesMap[this.path]),
             validateMiddleware(AddDistrictDTO, true),
             this.LocationController.addDistrict
         );
@@ -85,6 +96,11 @@ export default class LocationRoute implements Route {
         this.router.get(
             this.path + "/points/:route",
             this.LocationController.getListPointByRoute
+        );
+
+        this.router.get(
+            this.path + "/group-options",
+            this.LocationController.getGroupedLocaltion
         );
     }
 }

@@ -12,6 +12,10 @@ import { CustomerRoute } from "@modules/customer";
 import { BookingRoute } from "@modules/book";
 import { TestsRoute } from "@modules/testquery/cars";
 import { UploadRoute } from "@modules/upload/users";
+import { PermissionRoute } from "@modules/permissions";
+import { CoachRoute } from "@modules/coach";
+import { PaymentRoute } from "@modules/payment";
+
 validateEnv();
 const routes = [
     new IndexRoute(),
@@ -24,6 +28,9 @@ const routes = [
     new CustomerRoute(),
     new BookingRoute(),
     new TestsRoute(),
+    new PermissionRoute(),
+    new CoachRoute(),
+    new PaymentRoute(),
 ];
 const app = new App(routes);
 

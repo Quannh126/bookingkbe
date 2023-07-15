@@ -3,7 +3,11 @@ import { isEmptyObject } from "@core/utils/helper";
 import { HttpException } from "@core/exceptions";
 import { IPagination, NameValue } from "@core/interfaces";
 import AddPointDTO from "./dto/add_point.dto";
-import { IDistrict, IPoint } from "./interfaces/location.interface";
+import {
+    IDistrict,
+    IPoint,
+    ILocationGrouped,
+} from "./interfaces/location.interface";
 import CreateLocationDTO from "./dto/create_location.dto";
 import AddDistrictDTO from "./dto/add_district.dto";
 import AddLocationDTO from "./dto/add_location.dto";
@@ -227,18 +231,51 @@ class LocationService {
         const reuslt = await this.locationModel.find().exec();
         return reuslt;
     }
+
     public async deletePoint(
-        province_id: string,
-        point_id: string,
-        district_id: string
+        provinceCode: string,
+        pointCode: string,
+        districtCode: string
     ): Promise<ILocation> {
+        // const result = await this.locationModel.findOneAndUpdate(
+        //     {
+        //         code: provinceCode,
+        //         "district.code": districtCode,
+        //     },
+        //     { $pull: { district: { point: { code: pointCode } } } }
+        // );
+        const location = await this.locationModel
+            .findOne({
+                code: provinceCode,
+            })
+            .exec();
+        if (!location) {
+            throw new HttpException(400, "Id not exist");
+        }
+        const district = location.district.find(
+            (dist) => dist.code === parseInt(districtCode)
+        );
+
+        const pointIndex = district?.point.findIndex(
+            (point) => point.code === parseInt(pointCode)
+        );
+        if (pointIndex === -1) {
+            console.log("Point not found");
+            throw new HttpException(400, "Point not found");
+        }
+        district?.point.splice(pointIndex!, 1);
+
+        district?.point.forEach((point, index) => {
+            point.code = index + 1;
+        });
         const result = await this.locationModel.findOneAndUpdate(
             {
-                code: province_id,
-                "district.code": district_id,
+                code: provinceCode,
+                "district.code": districtCode,
             },
-            { $pull: { district: { point: { code: point_id } } } }
+            { $set: { "district.$.point": [...district!.point] } }
         );
+
         if (!result) {
             throw new HttpException(400, "Id not exist");
         }
@@ -317,6 +354,40 @@ class LocationService {
         });
 
         return { dropoff: listDropoff, pickup: listPickup };
+    }
+
+    public async getGroupedLocation(): Promise<ILocationGrouped[]> {
+        const all = await this.locationModel
+            .find({})
+            // .select("district.point.code district.point.name")
+            .exec();
+        console.log(all);
+        let result = [] as ILocationGrouped[];
+        const transformedData = all.map((location) => {
+            const header = location.name;
+            const point = location.district.flatMap((district) => {
+                const districtCode = district.code;
+                return district.point.map((point) => ({
+                    code_group: `${location.code}-${districtCode}-${point.code}`,
+                    name: point.name,
+                }));
+            });
+            return { header, point };
+        });
+        // all.forEach((location: any) => {
+        //     location.district.forEach((district: any) => {
+        //         district.point.forEach((point: any) => {
+        //             const codeGroup = `${location.code}-${district.code}-${point.code}`;
+        //             const groupedLocation: ILocationGrouped = {
+        //                 code_group: codeGroup,
+        //                 name: point.name,
+        //                 sub_header: `${location.name}`,
+        //             };
+        //             result.push(groupedLocation);
+        //         });
+        //     });
+        // });
+        return transformedData;
     }
 }
 export default LocationService;

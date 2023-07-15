@@ -2,6 +2,7 @@ declare namespace Express {
     interface Request {
         user: {
             id: string;
+            role: string;
         };
         query: {
             keyword?: string;

@@ -14,6 +14,7 @@ export default interface ITrip {
     fare: number;
     sell_type: string;
     car_id: string;
+    trip_status: boolean;
 }
 export interface IPointDetail {
     district_id: number;

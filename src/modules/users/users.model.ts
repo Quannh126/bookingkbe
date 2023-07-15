@@ -1,5 +1,6 @@
 import mongoose, { Schema, model } from "mongoose";
 import IUser from "./users.interface";
+
 const UserSchema = new Schema<IUser & mongoose.Document>({
     fullname: {
         type: String,
@@ -17,9 +18,11 @@ const UserSchema = new Schema<IUser & mongoose.Document>({
         type: String,
         require: false,
     },
-    info: {
+    role: {
         type: String,
+        enum: ["Admin", "Manager", "Employee"],
         require: false,
+        default: "USER",
     },
     resetPasswordLink: {
         type: String,
@@ -27,10 +30,6 @@ const UserSchema = new Schema<IUser & mongoose.Document>({
     },
     isVerified: {
         type: Boolean,
-        require: true,
-    },
-    salt: {
-        type: String,
         require: true,
     },
     date: {

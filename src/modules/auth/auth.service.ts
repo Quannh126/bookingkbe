@@ -5,6 +5,7 @@ import { HttpException } from "@core/exceptions";
 import bcryptjs from "bcryptjs";
 import jwt from "jsonwebtoken";
 import LoginDto from "./auth.dto";
+import { AccessTokenData, DataStoredInTokenRefresh } from "./auth.interface";
 
 class AuthService {
     public userModel = User;
@@ -17,7 +18,7 @@ class AuthService {
         if (!user) {
             throw new HttpException(409, `Email not exist`);
         }
-        console.log(model.password + "---" + user.password);
+        // console.log(model.password + "---" + user.password);
         const isMatchPassword = await bcryptjs.compare(
             model.password,
             user.password
@@ -25,9 +26,9 @@ class AuthService {
         if (!isMatchPassword) {
             throw new HttpException(409, `Credential is not valid`);
         }
-        return this.createToken(user);
+        return this.createAllToken(user);
     }
-
+    // GET /auth
     public async getCurrentUser(uid: string): Promise<IProfile> {
         let user = await this.userModel.findById({ _id: uid });
         if (!user) {
@@ -36,19 +37,49 @@ class AuthService {
         return {
             phone: user.phone,
             fullname: user.fullname,
+            role: user.role,
             avatar: user.avatar,
             username: user.username,
         };
     }
-
-    private createToken(user: IUser): TokenData {
-        const dataToken: DataStoredInToken = { id: user._id };
+    // GET /refresh
+    public async refreshToken(userId: string): Promise<AccessTokenData> {
+        const user = await this.userModel.findById(userId);
+        if (!user) {
+            throw new HttpException(409, `Email not exist`);
+        }
+        return this.createToken(user);
+    }
+    private createAllToken(user: IUser): TokenData {
+        const dataToken: DataStoredInToken = { id: user._id, role: user.role };
+        const data: DataStoredInTokenRefresh = { id: user._id };
         const secret: string = process.env.JWT_KEY!;
-        const expiresIn: number = 7200000;
+        const secret2: string = process.env.REFRESH_KEY!;
+        const expiresIn1: number = 60 * 60 * 1000;
+        const expiresIn2: number = 24 * 60 * 60 * 1000;
         const now = new Date().getTime();
-        let expiredAt: number = expiresIn + now;
+        let expiredAt: number = expiresIn1 + now;
+
         return {
-            accessToken: jwt.sign(dataToken, secret, { expiresIn: expiresIn })!,
+            accessToken: jwt.sign(dataToken, secret, {
+                expiresIn: expiresIn1,
+            })!,
+            refreshToken: jwt.sign(data, secret2, { expiresIn: expiresIn2 })!,
+            expiredAt: expiredAt,
+        };
+    }
+    private createToken(user: IUser): AccessTokenData {
+        const dataToken: DataStoredInToken = { id: user._id, role: user.role };
+
+        const secret: string = process.env.JWT_KEY!;
+        const expiresIn1: number = 10 * 1000;
+        const now = new Date().getTime();
+        let expiredAt: number = expiresIn1 + now;
+
+        return {
+            accessToken: jwt.sign(dataToken, secret, {
+                expiresIn: expiresIn1,
+            })!,
             expiredAt: expiredAt,
         };
     }

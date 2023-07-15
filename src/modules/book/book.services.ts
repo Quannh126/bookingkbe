@@ -322,7 +322,6 @@ class BookingService {
         if (isEmptyObject(data)) {
             throw new HttpException(400, "Data is empty");
         }
-
         // console.log(data);
         const { seat, booking_id } = data;
         let bookingData = await this.bookingModel.findById(booking_id).exec();
@@ -341,6 +340,22 @@ class BookingService {
     }
 
     public async removeBooking(
+        trip_id: string,
+        list_seat: string
+    ): Promise<void> {
+        if (!trip_id || !list_seat) {
+            throw new HttpException(400, "Data is empty");
+        }
+        const list = await list_seat.split("-").map((item) => Number(item));
+        const result = await this.bookingModel.deleteMany({
+            trip_id: trip_id,
+            seat: { $in: list },
+        });
+        if (!result) {
+            throw new HttpException(409, "Lỗi không xoá được");
+        }
+    }
+    public async destroyBooking(
         trip_id: string,
         list_seat: string
     ): Promise<void> {

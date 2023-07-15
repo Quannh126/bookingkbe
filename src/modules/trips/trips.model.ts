@@ -95,6 +95,12 @@ const TripSchema = new Schema<ITrip & mongoose.Document>({
         type: String,
         require: true,
     },
+    trip_status: {
+        type: Boolean,
+        require: true,
+
+        default: true,
+    },
 });
 const Trip = model<ITrip & mongoose.Document>("Trips", TripSchema);
 export default Trip;

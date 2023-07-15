@@ -8,10 +8,11 @@ import bcryptjs from "bcryptjs";
 import IUser from "./users.interface";
 import jwt from "jsonwebtoken";
 import { IPagination } from "@core/interfaces";
+import { AccessTokenData } from "@modules/auth/auth.interface";
 class UserService {
     public userModel = User;
 
-    public async createUser(model: RegisterDto): Promise<TokenData> {
+    public async createUser(model: RegisterDto): Promise<AccessTokenData> {
         if (isEmptyObject(model)) {
             throw new HttpException(400, "Model is empty");
         }
@@ -19,18 +20,19 @@ class UserService {
         if (user) {
             throw new HttpException(409, "User exist");
         }
-        const avatar = gravatar.url(model.username!, {
+        const avatar = gravatar.url(model.email!, {
             size: "200",
             rating: "g",
             default: "mm",
         });
 
-        const salt = await bcryptjs.genSalt(10);
-        const hashedPassword = await bcryptjs.hash(model.password!, salt);
+        // const salt = await bcryptjs.genSalt(10);
+        const hashedPassword = await bcryptjs.hash(model.password!, 10);
         const createUser: IUser = await this.userModel.create({
             ...model,
             password: hashedPassword,
             avatar: avatar,
+            isVerified: true,
             date: Date.now(),
         });
         return this.createToken(createUser);
@@ -76,8 +78,8 @@ class UserService {
         }
         return deleteUser;
     }
-    private createToken(user: IUser): TokenData {
-        const dataToken: DataStoredInToken = { id: user._id };
+    private createToken(user: IUser): AccessTokenData {
+        const dataToken: DataStoredInToken = { id: user._id, role: user.role };
         const secret: string = process.env.JWT_KEY!;
         const expiresIn: number = 7200;
         const now = new Date().getTime();

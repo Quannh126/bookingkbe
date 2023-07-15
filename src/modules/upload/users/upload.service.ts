@@ -35,7 +35,7 @@ class UploadService {
             Key: `${car_id}/${uuid()}.${tail}`,
             Expires: 60,
         };
-        console.log(params2);
+        // console.log(params2);
         const urlUpload = await s3.getSignedUrlPromise("putObject", params2);
         // presignedUrls.push(urlUpload);
         // }

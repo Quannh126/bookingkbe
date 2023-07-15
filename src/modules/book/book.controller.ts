@@ -109,7 +109,7 @@ export default class BookingController {
                 trip_id,
                 list_seat
             );
-            res.status(201).json({ msg: "success" });
+            res.status(200).json({ msg: "success" });
             Logger.info(booking);
         } catch (error) {
             next(error);

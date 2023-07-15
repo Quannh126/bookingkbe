@@ -1,0 +1,98 @@
+swagger: "2.0"
+info:
+    description: "BYGroupApi"
+    version: "1.0.0"
+    title: "BYGroupApi"
+    termOfService: "Quannh"
+    contact:
+        email: "quannh1269@gmail.com"
+    license:
+        name: "MIT"
+        url: "https://opensource.org/licenses/MIT"
+host: "localhost:5000"
+basePath: "/api/v1"
+tags:
+    - name: "auth"
+      description: "Authentication APIs"
+    - name: "trips"
+      description: "Trips APIs"
+    - name: "locations"
+      description: "Location APIs"
+    - name: "customer"
+      description: "Customers APIs"
+    - name: "coach"
+      description: "Coach APIs"
+    - name: "cars"
+      description: "Cars APIs"
+    - name: "book"
+      description: "Book APIs"
+    - name: "upload"
+      description: "Upload APIs"
+    - name: "users"
+      description: "User APIs"
+    - name: "coach"
+      description: "Coach APIs"
+
+schemes:
+    - "http"
+paths:
+    /auth:
+        post:
+            tags:
+                - "auth"
+            summary: "Login API and get token"
+            description: "Input email and password"
+            operationId: "login"
+            consumes:
+                - "application/json"
+            produces:
+                - "application/json"
+            parameters:
+                - in: "body"
+                  name: "body"
+                  description: "Login for user"
+                  required: true
+                  schema:
+                      $ref: "#/definitions/LoginDto"
+            responses:
+                "400":
+                    description: "Invalid input"
+    /coach:
+        /check-seat:
+            post:
+                tags:
+                    - "coach"
+                summary: "Check seat available API"
+                description: "Input Seat detail"
+                operationId: "Booking public"
+                consumes:
+                    - "application/json"
+                produces:
+                    - "application/json"
+                parameters:
+                    - in: "body"
+                      name: "body"
+                      description: "Check seat available"
+                      required: true
+                      schema:
+                          $ref: "#/definitions/CheckSeatDTO"
+                responses:
+                    "400":
+                        description: "Invalid input"
+definitions:
+    LoginDto:
+        type: "object"
+        properties:
+            username:
+                type: "string"
+            password:
+                type: "string"
+    CheckSeatDTO:
+        type: "object"
+        properties:
+            trip_id:
+                type: "string"
+            seat:
+                type: "number"
+            journey_date:
+                type: "string"

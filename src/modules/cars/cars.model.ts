@@ -35,6 +35,7 @@ const CarSchema = new Schema<ICar & mongoose.Document>({
     status: {
         type: String,
         required: false,
+        enum: ["Yet To Start", "Running", "Maintenance"],
         default: "Yet To Start",
     },
 

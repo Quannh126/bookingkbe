@@ -10,6 +10,8 @@ import e from "express";
 import CreateTripDTO from "./dto/create_trips.dto";
 import UpdateTripDTO from "./dto/update_trip.dto";
 import { Logger } from "@core/utils";
+import { Car_Status } from "@modules/cars/interfaces/status";
+
 // import UpdateTripDTO from "./dto/update_trip.dto";
 
 export default class TripService {
@@ -23,7 +25,7 @@ export default class TripService {
         }
         return trips;
     }
-
+    // Thêm chuyến
     public async addTrip(data: CreateTripDTO): Promise<ITrip> {
         if (isEmptyObject(data)) {
             throw new HttpException(400, "Data is empty");
@@ -56,9 +58,9 @@ export default class TripService {
         return trip;
     }
 
-    public async getTripDetaul(trip_id: string): Promise<ITrip> {
+    public async getTripDetail(trip_id: string): Promise<ITrip> {
         const trip = await this.tripModel.findOne({ _id: trip_id });
-        console.log(trip);
+        // console.log(trip);
         if (!trip) {
             throw new HttpException(400, "Cant find this");
         }
@@ -66,10 +68,15 @@ export default class TripService {
     }
 
     public async deleteTrip(id: string): Promise<ITrip> {
-        const trip = await this.tripModel.findOneAndDelete({ _id: id });
+        const trip = await this.tripModel.findOneAndUpdate(
+            { _id: id },
+            { trip_status: false }
+        );
+
         if (!trip) {
             throw new HttpException(400, "Cant find this");
         }
+
         return trip;
     }
 
@@ -77,10 +84,13 @@ export default class TripService {
         const olderCar = await this.carModel
             .findOneAndUpdate(
                 { _id: data.car?._id },
-                { status: "Yet To Start" }
+                { status: Car_Status.YetToStart }
             )
             .exec();
-        const carData = await this.carModel.findById(data.car_id);
+        const carData = await this.carModel.findOneAndUpdate(
+            { _id: data.car_id },
+            { status: Car_Status.Running }
+        );
 
         if (!carData || !olderCar) {
             throw new HttpException(400, "Cant find car");
@@ -190,7 +200,7 @@ export default class TripService {
     public async getPickupAndDropoffOption(
         trip_id: string
     ): Promise<{ dropoff: Array<NameValue>; pickup: Array<NameValue> }> {
-        console.log(trip_id);
+        //console.log(trip_id);
         const trip = await this.tripModel.findById(trip_id).exec();
         if (!trip) {
             throw new HttpException(400, "Cant find this");
@@ -238,7 +248,7 @@ export default class TripService {
 
             listPickup.push(resultMap);
         });
-        console.log(listDropoff);
+        //console.log(listDropoff);
 
         return { dropoff: listDropoff, pickup: listPickup };
     }

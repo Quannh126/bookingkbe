@@ -3,7 +3,7 @@ export default interface IUser {
     fullname: string;
     phone: string;
     username: string;
-    info: string;
+    role: string;
     resetPasswordLink: string;
     isVerified: boolean;
     salt: string;

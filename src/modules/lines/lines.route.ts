@@ -1,12 +1,17 @@
 import { Router } from "express";
 import { Route } from "@core/interfaces";
 
-import { authMiddleware, validateMiddleware } from "@core/middlewares";
+import {
+    authMiddleware,
+    validateMiddleware,
+    verifyRolesMiddleware,
+} from "@core/middlewares";
 import LineController from "./lines.controller";
 import CreateLineDTO from "./dto/create_lines.dto";
+import { rolesMap } from "@core/utils/roles";
 
 export default class LineRoute implements Route {
-    public path = "/api/admin/lines";
+    public path = "/lines";
     public router = Router();
 
     public LineController = new LineController();
@@ -17,7 +22,8 @@ export default class LineRoute implements Route {
     private initializeRoutes() {
         this.router.post(
             this.path,
-            // authMiddleware,
+            authMiddleware,
+            verifyRolesMiddleware(rolesMap[this.path]),
             validateMiddleware(CreateLineDTO, true),
             this.LineController.addLine
         );
@@ -28,12 +34,14 @@ export default class LineRoute implements Route {
         this.router.get(this.path, this.LineController.getListLine);
         this.router.delete(
             this.path + "/:lineid",
-            //authMiddleware,
+            authMiddleware,
+            verifyRolesMiddleware(rolesMap[this.path]),
             this.LineController.deleteTrip
         );
         this.router.put(
             this.path + "/:lineid",
-            // authMiddleware,
+            authMiddleware,
+            verifyRolesMiddleware(rolesMap[this.path]),
             validateMiddleware(CreateLineDTO, true),
             this.LineController.updateLine
         );

@@ -66,6 +66,12 @@ const BookingSchema = new Schema<IBooking & mongoose.Document>({
         type: String,
         required: true,
     },
+    status_ticket: {
+        type: String,
+        require: true,
+        enum: ["Reserved", "Paid", "Cancelled"],
+        default: "Reserved",
+    },
 });
 const Booking = model<IBooking & mongoose.Document>("Booking", BookingSchema);
 export default Booking;

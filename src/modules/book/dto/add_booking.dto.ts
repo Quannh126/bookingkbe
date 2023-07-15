@@ -18,6 +18,9 @@ export default class AddBookingDto {
     @IsNotEmpty()
     public dropoff_point: string | undefined;
     @IsNotEmpty()
+    public is_payment_online: string | undefined;
+
     public status_payment: string | undefined;
+    @IsNotEmpty()
     public note: string | undefined;
 }

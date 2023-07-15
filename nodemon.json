@@ -1,6 +1,6 @@
 {
     "what": ["src"],
-    "ext": ".ts, .js",
+    "ext": ".ts, .js, .yaml",
     "ignore": [],
     "exec": "ts-node -r tsconfig-paths/register"
-  }
+}

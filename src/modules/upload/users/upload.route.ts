@@ -4,7 +4,7 @@ import UploadController from "./upload.controller";
 import { authMiddleware, validateMiddleware } from "@core/middlewares";
 import RegisterDto from "./dtos/register.dto";
 export default class UploadRoute implements Route {
-    public path = "/api/upload";
+    public path = "/upload";
     public router = Router();
 
     public uploadController = new UploadController();
@@ -15,10 +15,13 @@ export default class UploadRoute implements Route {
     private initializeRoutes() {
         this.router.get(
             this.path + "/get-uploaded-img/:car_id",
+            authMiddleware,
+
             this.uploadController.getUrlUpload
         );
         this.router.get(
             this.path + "/:car_id/:name_file",
+            authMiddleware,
             this.uploadController.getUrlUpload
         );
     }

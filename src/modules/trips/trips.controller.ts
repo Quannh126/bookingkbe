@@ -39,7 +39,7 @@ export default class TripController {
     ) => {
         try {
             const trip_id: string = req.params.trip_id;
-            const listTrip = await this.tripService.getTripDetaul(trip_id);
+            const listTrip = await this.tripService.getTripDetail(trip_id);
             res.status(200).json(listTrip);
         } catch (error) {
             next(error);
