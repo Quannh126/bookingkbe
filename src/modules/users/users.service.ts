@@ -58,7 +58,7 @@ class UserService {
     }
     public async getAll(): Promise<IDataUser[]> {
         const users = await this.userModel.find().exec();
-        const transformedData: IDataUser[] = users.map((user) => {
+        const transformedData: IDataUser[] = users.map((user: any) => {
             return {
                 _id: user._id,
                 fullname: user.fullname,
