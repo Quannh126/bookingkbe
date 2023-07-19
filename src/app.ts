@@ -47,7 +47,12 @@ class App {
             );
             this.app.use(morgan("combinded"));
         } else {
-            this.app.use(cors({ origin: true, credentials: true }));
+            this.app.use(
+                cors({
+                    origin: "https://booking-k.vercel.app",
+                    credentials: true,
+                })
+            );
             this.app.use(morgan("dev"));
         }
 
