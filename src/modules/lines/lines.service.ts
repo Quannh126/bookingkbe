@@ -29,7 +29,7 @@ class LinesService {
         const list = await this.lineModel
             .find({}, { _id: 1, name_line: 1 })
             .exec();
-        let result = list.map(({ _id: key, name_line: value }) => ({
+        const result = list.map(({ _id: key, name_line: value }) => ({
             key,
             value,
         }));
@@ -37,14 +37,14 @@ class LinesService {
         return result;
     }
 
-    public async searchLine(name_line: String): Promise<ILine[]> {
-        let query = {
+    public async searchLine(name_line: string): Promise<ILine[]> {
+        const query = {
             name_line: name_line,
         };
         const lines = await this.lineModel.find(name_line).exec();
         return lines;
     }
-    public async getLine(id: String): Promise<ILine> {
+    public async getLine(id: string): Promise<ILine> {
         const line = await this.lineModel.findOne({ id }).exec();
         if (!line) {
             throw new HttpException(405, "Id not exist");

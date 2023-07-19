@@ -40,7 +40,7 @@ export default class UserController {
         next: NextFunction
     ) => {
         try {
-            const page: number = Number(req.params.page);
+            const page = Number(req.params.page);
             const keyword: string = !req.query.keyword
                 ? ""
                 : req.query.keyword?.toString();

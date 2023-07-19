@@ -28,8 +28,8 @@ export interface ITrip {
     driver1id: string;
     driver2id: string;
     seatsBooked: number[];
-    fare: String;
-    imagePath: String;
+    fare: string;
+    imagePath: string;
 }
 
 export interface ILine {
@@ -72,7 +72,7 @@ export interface ITicket {
     _id: string;
     customer_id: string;
     car_id: string;
-    seat_no: Number;
+    seat_no: number;
     status: string;
     payment: IPayment;
     isShuttle: boolean;

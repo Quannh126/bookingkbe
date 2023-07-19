@@ -6,7 +6,7 @@ export default class UpdateUserDTO {
     @IsNotEmpty()
     public fullname: string | undefined;
     @IsNotEmpty()
-    public phone: Number | undefined;
+    public phone: number | undefined;
     @IsNotEmpty()
     public email: string | undefined;
     @IsNotEmpty()

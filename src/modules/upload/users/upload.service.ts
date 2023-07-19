@@ -23,7 +23,7 @@ class UploadService {
     public async generrateUpload(
         car_id: string,
         filename: string
-    ): Promise<String> {
+    ): Promise<string> {
         const presignedUrls = [];
         const nameSplit = filename.split(".");
         const tail = nameSplit[nameSplit.length - 1];

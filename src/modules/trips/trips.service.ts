@@ -36,7 +36,7 @@ export default class TripService {
         if (!carDetail) {
         }
 
-        let dataCreate = {
+        const dataCreate = {
             to_id: data.to_id,
             from_id: data.from_id,
             pickup_point: data.pickup_point,
@@ -120,7 +120,7 @@ export default class TripService {
         }
         const list: Array<ITrip> = [];
         if (!pickup && dropoff) {
-            let info = dropoff.split("-");
+            const info = dropoff.split("-");
             const district_id = Number(info[0]);
             const point_id = Number(info[1]);
             const list = await this.tripModel
@@ -134,7 +134,7 @@ export default class TripService {
             return list;
         }
         if (pickup && !dropoff) {
-            let info = pickup.split("-");
+            const info = pickup.split("-");
             const district_id = Number(info[0]);
             const point_id = Number(info[1]);
             const list = await this.tripModel
@@ -148,10 +148,10 @@ export default class TripService {
             return list;
         }
         if (pickup && dropoff) {
-            let info = pickup.split("-");
+            const info = pickup.split("-");
             const district_id = Number(info[0]);
             const point_id = Number(info[1]);
-            let info2 = dropoff.split("-");
+            const info2 = dropoff.split("-");
             const district_id2 = Number(info2[0]);
             const point_id2 = Number(info2[1]);
             const find = {
@@ -215,15 +215,15 @@ export default class TripService {
             return { dropoff: [], pickup: [] };
         }
 
-        let listDropoff = [
+        const listDropoff = [
             { name: "-Chọn điểm xuống-", value: "" },
         ] as Array<NameValue>;
-        let listPickup = [
+        const listPickup = [
             { name: "-Chọn điểm đón-", value: "" },
         ] as Array<NameValue>;
 
         trip.dropoff_point.forEach((item) => {
-            let resultMap = {
+            const resultMap = {
                 value: item.district_id + "-" + item.point_id,
                 name:
                     listProvince2.district[Number(item.district_id) - 1].name +
@@ -236,7 +236,7 @@ export default class TripService {
             listDropoff.push(resultMap);
         });
         trip.pickup_point.forEach((item) => {
-            let resultMap = {
+            const resultMap = {
                 value: item.district_id + "-" + item.point_id,
                 name:
                     listProvince1.district[Number(item.district_id) - 1].name +

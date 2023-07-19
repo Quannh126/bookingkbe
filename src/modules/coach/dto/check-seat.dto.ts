@@ -3,7 +3,7 @@ import { IsNotEmpty } from "class-validator";
 
 export default class CheckSeatDTO {
     @IsNotEmpty()
-    public seat: Number | undefined;
+    public seat: number | undefined;
     @IsNotEmpty()
     public trip_id: string | undefined;
     @IsNotEmpty()

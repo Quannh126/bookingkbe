@@ -38,14 +38,14 @@ class CustomerService {
         return customers;
     }
 
-    public async searchCustomer(name: String): Promise<ICustomer[]> {
-        let query = {
+    public async searchCustomer(name: string): Promise<ICustomer[]> {
+        const query = {
             name: `/${name}/`,
         };
         const customer = await this.customerModel.find(query).exec();
         return customer;
     }
-    public async getCustomer(id: String): Promise<ICustomer> {
+    public async getCustomer(id: string): Promise<ICustomer> {
         const customer = await this.customerModel.findOne({ id }).exec();
         if (!customer) {
             throw new HttpException(405, "Id not exist");

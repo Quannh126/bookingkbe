@@ -8,8 +8,8 @@ export const convertDateToString = (date: Date): string => {
     );
 };
 export function sortObject(obj: Record<string, any>): Record<string, any> {
-    let sorted: Record<string, any> = {};
-    let str = [];
+    const sorted: Record<string, any> = {};
+    const str = [];
     let key;
     for (key in obj) {
         if (obj.hasOwnProperty(key)) {

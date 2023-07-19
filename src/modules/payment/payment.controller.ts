@@ -14,26 +14,26 @@ export default class PaymentController {
         next: NextFunction
     ) => {
         try {
-            let date = new Date();
-            let createDate = moment(date).format("YYYYMMDDHHmmss");
+            const date = new Date();
+            const createDate = moment(date).format("YYYYMMDDHHmmss");
 
             // let ipAddr = "127.0.0.1";
-            let ipAddr =
+            const ipAddr =
                 req.headers["x-forwarded-for"] ||
                 // req.connection.remoteAddress ||
                 req.socket.remoteAddress;
 
             // console.log("ipAddr", ipAddr);
-            let tmnCode = process.env.vnp_TmnCode;
-            let secretKey = process.env.vnp_HashSecret;
+            const tmnCode = process.env.vnp_TmnCode;
+            const secretKey = process.env.vnp_HashSecret;
             let vnpUrl = process.env.vnp_Url;
-            let returnUrl = process.env.vnp_ReturnUrl;
-            let orderId = moment(date).format("DDHHmmss");
-            let amount = req.body.amount;
-            let bankCode = req.body.bankCode;
-            let orderInfo = req.body.orderInfo;
+            const returnUrl = process.env.vnp_ReturnUrl;
+            const orderId = moment(date).format("DDHHmmss");
+            const amount = req.body.amount;
+            const bankCode = req.body.bankCode;
+            const orderInfo = req.body.orderInfo;
 
-            let currCode = "VND";
+            const currCode = "VND";
             let vnp_Params: Record<string, any> = {};
             vnp_Params["vnp_Version"] = "2.1.0";
             vnp_Params["vnp_Command"] = "pay";
@@ -52,13 +52,13 @@ export default class PaymentController {
             }
 
             vnp_Params = sortObject(vnp_Params);
-            let signData = querystring.stringify(vnp_Params, { encode: false });
-            let hmac = crypto.createHmac(
+            const signData = querystring.stringify(vnp_Params, { encode: false });
+            const hmac = crypto.createHmac(
                 process.env.vnp_SecureHashType!,
                 secretKey!
             );
             console.log(signData);
-            let signed = hmac
+            const signed = hmac
                 .update(Buffer.from(signData, "utf-8"))
                 .digest("hex");
             vnp_Params["vnp_SecureHash"] = signed;

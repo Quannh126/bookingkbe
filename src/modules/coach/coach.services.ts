@@ -319,7 +319,7 @@ class CoachService {
         }
 
         if (!data.customer!._id || data.customer!._id == "") {
-            let check_customer = await this.customerModel.findOne({
+            const check_customer = await this.customerModel.findOne({
                 phonenumber: data.customer!.phonenumber,
             });
             // console.log(check_customer);
@@ -342,7 +342,7 @@ class CoachService {
             trip_id: data.trip_id,
         };
         const listBooked = await this.bookingModel.find(query).exec();
-        let listBookedSeat: Array<string> = [];
+        const listBookedSeat: Array<string> = [];
         await listBooked.forEach((book) => {
             listBookedSeat.push(book.seat);
         });
@@ -359,7 +359,7 @@ class CoachService {
             );
         } else {
             const documents = [];
-            const list_ticket: Array<String> = [];
+            const list_ticket: Array<string> = [];
             const ticket_code = uuidv4();
             data!.customer = {
                 ...data!.customer,
@@ -367,7 +367,7 @@ class CoachService {
                     ? 1
                     : data!.customer!.times_booking + 1,
             } as ICustomer;
-            for (let seat of selectedSeats) {
+            for (const seat of selectedSeats) {
                 const newObject = {
                     ...data,
                     ticket_code: ticket_code,
@@ -379,7 +379,7 @@ class CoachService {
             }
             const bookingDetail = await this.bookingModel.create(documents);
             bookingDetail.forEach((item) => {
-                list_ticket.push(item._id as String);
+                list_ticket.push(item._id as string);
             });
 
             const paymentData = await this.paymentModel.create({

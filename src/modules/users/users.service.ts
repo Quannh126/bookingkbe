@@ -113,9 +113,9 @@ class UserService {
     private createToken(user: IUser): AccessTokenData {
         const dataToken: DataStoredInToken = { id: user._id, role: user.role };
         const secret: string = process.env.JWT_KEY!;
-        const expiresIn: number = 7200;
+        const expiresIn = 7200;
         const now = new Date().getTime();
-        let expiredAt: number = expiresIn + now;
+        const expiredAt: number = expiresIn + now;
         return {
             accessToken: jwt.sign(dataToken, secret, { expiresIn: expiresIn })!,
             expiredAt: expiredAt,

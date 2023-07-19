@@ -1,7 +1,7 @@
 import mongoose, { Schema, model } from "mongoose";
 export interface IPermission {
-    role: String;
-    permissions: Array<String>;
+    role: string;
+    permissions: Array<string>;
 }
 
 const PermissionSchema = new Schema<IPermission & mongoose.Document>({

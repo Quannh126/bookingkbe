@@ -36,7 +36,7 @@ class AuthService {
     }
     // GET /auth
     public async getCurrentUser(uid: string): Promise<IProfile> {
-        let user = await this.userModel.findById({ _id: uid });
+        const user = await this.userModel.findById({ _id: uid });
         if (!user) {
             throw new HttpException(403, "Người dùng không tồn tại");
         }
@@ -64,7 +64,7 @@ class AuthService {
         const expiresIn1: number = 60 * 60 * 1000;
         const expiresIn2: number = 24 * 60 * 60 * 1000;
         const now = new Date().getTime();
-        let expiredAt: number = expiresIn1 + now;
+        const expiredAt: number = expiresIn1 + now;
 
         return {
             accessToken: jwt.sign(dataToken, secret, {
@@ -80,7 +80,7 @@ class AuthService {
         const secret: string = process.env.JWT_KEY!;
         const expiresIn1: number = 10 * 1000;
         const now = new Date().getTime();
-        let expiredAt: number = expiresIn1 + now;
+        const expiredAt: number = expiresIn1 + now;
 
         return {
             accessToken: jwt.sign(dataToken, secret, {

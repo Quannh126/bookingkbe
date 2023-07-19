@@ -53,7 +53,7 @@ export default class CustomerController {
         next: NextFunction
     ) => {
         try {
-            const page: number = Number(req.params.page);
+            const page = Number(req.params.page);
             const keyword: string = req.query.toString();
             const customers = await this.customerService.getAllPaging(
                 keyword,

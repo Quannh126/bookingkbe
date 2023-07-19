@@ -60,7 +60,7 @@ export default class CarController {
         next: NextFunction
     ) => {
         try {
-            const page: number = Number(req.params.page);
+            const page = Number(req.params.page);
             const keyword: string = req.query.toString();
             const cars = await this.carService.getAllPaging(keyword, page);
             res.status(201).json(cars);

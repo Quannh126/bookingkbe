@@ -1,25 +1,18 @@
 {
-    "plugins": ["@typescript-eslint", "unused-imports"],
+    "root": true,
+    "parser": "@typescript-eslint/parser",
+    "plugins": ["@typescript-eslint", "prettier"],
     "extends": [
         "eslint:recommended",
-        "plugin:@typescript-eslint/eslint-recommended",
-        "plugin:@typescript-eslint/recommended"
+        "plugin:@typescript-eslint/recommended",
+        "eslint-config-prettier",
+        "prettier"
     ],
+    "rules": {
+        "@typescript-eslint/no-explicit-any": "off",
+        "@typescript-eslint/no-unused-vars": "off"
+    },
     "parserOptions": {
         "project": "./tsconfig.json"
-    },
-    "rules": {
-        "prettier/prettier": [
-            "error",
-            {
-                "singleQuote": true
-            }
-        ],
-        "@typescript-eslint/no-unused-vars": "off",
-        "unused-imports/no-unused-imports": "error",
-        "unused-imports/no-unused-vars": [
-            "error",
-            { "argsIgnorePattern": "^_" }
-        ]
     }
 }

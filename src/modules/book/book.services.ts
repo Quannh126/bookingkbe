@@ -21,7 +21,7 @@ class BookingService {
         }
 
         if (!data.customer!._id || data.customer!._id == "") {
-            let check_customer = await this.customerModel.find({
+            const check_customer = await this.customerModel.find({
                 phonenumber: data.customer!.phonenumber,
             });
             // console.log(check_customer);
@@ -47,7 +47,7 @@ class BookingService {
         //KTra xem trùng chỗ nào k
         //ticket_code = ticket_code
         const listBooked = await this.bookingModel.find(query).exec();
-        let listBookedSeat: Array<string> = [];
+        const listBookedSeat: Array<string> = [];
         await listBooked.forEach((book) => {
             listBookedSeat.push(book.seat);
         });
@@ -71,7 +71,7 @@ class BookingService {
                     ? 1
                     : data!.customer!.times_booking + 1,
             } as ICustomer;
-            for (let seat of selectedSeats) {
+            for (const seat of selectedSeats) {
                 const newObject = {
                     ...data,
                     ticket_code: ticket_code,
@@ -296,12 +296,12 @@ class BookingService {
             "customer._id": data.customer?._id,
             trip_id: data.trip_id,
         });
-        let listSeatCustomerBooked: Array<string> = [];
+        const listSeatCustomerBooked: Array<string> = [];
         await listCustomerBooked.forEach((book) => {
             listSeatCustomerBooked.push(book.seat);
         });
         const listBooked = await this.bookingModel.find(query).exec();
-        let listBookedSeat: Array<string> = [];
+        const listBookedSeat: Array<string> = [];
         await listBooked.forEach((book) => {
             listBookedSeat.push(book.seat);
         });
@@ -322,7 +322,7 @@ class BookingService {
                 .deleteMany({ _id: { $in: listId } })
                 .exec();
             const documents = [];
-            for (let seat of selectedSeats) {
+            for (const seat of selectedSeats) {
                 const newObject = {
                     ...data,
                     ticket_code: ticket_code,
@@ -341,7 +341,7 @@ class BookingService {
         }
         // console.log(data);
         const { seat, booking_id } = data;
-        let bookingData = await this.bookingModel.findById(booking_id).exec();
+        const bookingData = await this.bookingModel.findById(booking_id).exec();
         // console.log(bookingData);
         if (!bookingData) {
             throw new HttpException(409, "Không tìm thấy chỗ đã chọn");

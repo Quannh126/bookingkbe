@@ -19,24 +19,24 @@ class PaymentService {
             throw new HttpException(400, "Model is empty");
         }
         let vnp_Params: Record<string, any> = { ...data };
-        let secureHash = vnp_Params["vnp_SecureHash"];
+        const secureHash = vnp_Params["vnp_SecureHash"];
         delete vnp_Params["vnp_SecureHash"];
         delete vnp_Params["vnp_SecureHashType"];
         vnp_Params = sortObject(vnp_Params);
-        let secretKey = process.env.vnp_HashSecret;
-        let signData = querystring.stringify(vnp_Params, { encode: false });
-        let hmac = crypto.createHmac(
+        const secretKey = process.env.vnp_HashSecret;
+        const signData = querystring.stringify(vnp_Params, { encode: false });
+        const hmac = crypto.createHmac(
             process.env.vnp_SecureHashType!,
             secretKey!
         );
         console.log(signData);
-        let signed = hmac.update(Buffer.from(signData, "utf-8")).digest("hex");
-        let amount = data.vnp_Amount;
-        let orderInfo = data.vnp_OrderInfo;
-        let payment_id = orderInfo
+        const signed = hmac.update(Buffer.from(signData, "utf-8")).digest("hex");
+        const amount = data.vnp_Amount;
+        const orderInfo = data.vnp_OrderInfo;
+        const payment_id = orderInfo
             ?.replace(/[`~!@#$%^&*()_|+\-=?;:'",.<>\{\}\[\]\\\/]/gi, "")
             .split("Thanh toán vé ")[1];
-        let rspCode = vnp_Params["vnp_ResponseCode"];
+        const rspCode = vnp_Params["vnp_ResponseCode"];
         let result_service = { message: "", code: "" };
         const dataPayment = await this.paymentModel
             .findById({ _id: payment_id })

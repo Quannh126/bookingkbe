@@ -25,7 +25,7 @@ class PermissionService {
         return result;
     }
 
-    public async removePermission(role: String): Promise<IPermission> {
+    public async removePermission(role: string): Promise<IPermission> {
         if (isEmptyObject(role)) {
             throw new HttpException(400, "Model is empty");
         }
@@ -55,7 +55,7 @@ class PermissionService {
         }
         return result;
     }
-    public async getPermission(role: String): Promise<IPermission> {
+    public async getPermission(role: string): Promise<IPermission> {
         if (isEmptyObject(role)) {
             throw new HttpException(400, "Model is empty");
         }

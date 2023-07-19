@@ -38,7 +38,7 @@ export default class PermissionController {
         next: NextFunction
     ) => {
         try {
-            const role: String = req.params.id;
+            const role: string = req.params.id;
             const result = await this.customerService.removePermission(role);
             res.status(200).json({ message: "success", data: result });
         } catch (error) {
@@ -52,7 +52,7 @@ export default class PermissionController {
         next: NextFunction
     ) => {
         try {
-            const role: String = req.params.id;
+            const role: string = req.params.id;
             const result = await this.customerService.getPermission(role);
             res.status(200).json({ message: "success", data: result });
         } catch (error) {
@@ -66,7 +66,7 @@ export default class PermissionController {
         next: NextFunction
     ) => {
         try {
-            const role: String = req.body;
+            const role: string = req.body;
             const result = await this.customerService.getAllPermission();
             res.status(200).json({ message: "success", data: result });
         } catch (error) {

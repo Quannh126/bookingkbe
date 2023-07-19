@@ -20,8 +20,8 @@ class LocationService {
 
     public async addPoint(
         data: AddPointDTO,
-        province_id: String,
-        district_id: String
+        province_id: string,
+        district_id: string
     ): Promise<ILocation> {
         if (isEmptyObject(data)) {
             throw new HttpException(400, "Model is empty");
@@ -36,7 +36,7 @@ class LocationService {
         const { length } = location.district[Number(district_id) - 1].point;
         const id = length + 1;
         const found = arr.some((item: IPoint) => item.name === data.name);
-        let dataPush: IPoint = {
+        const dataPush: IPoint = {
             code: id,
             name: data.name!,
             address: data.address!,
@@ -71,7 +71,7 @@ class LocationService {
     }
     public async addDistrict(
         data: AddDistrictDTO,
-        province_id: String
+        province_id: string
     ): Promise<ILocation> {
         if (isEmptyObject(data)) {
             throw new HttpException(400, "Model is empty");
@@ -85,7 +85,7 @@ class LocationService {
         const arr = location.district;
         const { length } = location.district;
         const id = length + 1;
-        let dataPush: IDistrict = {
+        const dataPush: IDistrict = {
             code: id,
             division_type: data.district_type!,
             name: data.district_name!,
@@ -152,7 +152,7 @@ class LocationService {
         if (!list) {
             return [];
         }
-        let result = await list.map(({ code: value, name: name }) => ({
+        const result = await list.map(({ code: value, name: name }) => ({
             value: value.toString(),
             name,
         }));
@@ -306,10 +306,10 @@ class LocationService {
             .findOne({ code: province_id })
             .exec();
         if (!location) return {};
-        let listOption = [] as Array<Array<NameValue>>;
+        const listOption = [] as Array<Array<NameValue>>;
         listOption.push([]);
         location.district.forEach((district: IDistrict) => {
-            let option = district.point.map(({ code: value, name: name }) => ({
+            const option = district.point.map(({ code: value, name: name }) => ({
                 value: value.toString(),
                 name,
             }));
@@ -334,11 +334,11 @@ class LocationService {
         if (!listProvince1 || !listProvince2) {
             return { dropoff: [], pickup: [] };
         }
-        let listDropoff = [{ name: "-Tất cả-", value: "" }] as Array<NameValue>;
-        let listPickup = [{ name: "-Tất cả-", value: "" }] as Array<NameValue>;
+        const listDropoff = [{ name: "-Tất cả-", value: "" }] as Array<NameValue>;
+        const listPickup = [{ name: "-Tất cả-", value: "" }] as Array<NameValue>;
         listProvince2.district.forEach((district: IDistrict) => {
             const listPoint = district.point;
-            let resultMap = listPoint.map(({ code: value, name: name }) => ({
+            const resultMap = listPoint.map(({ code: value, name: name }) => ({
                 value: district.code + "-" + value,
                 name: district.name + "-" + name,
             }));
@@ -346,7 +346,7 @@ class LocationService {
         });
         listProvince1.district.forEach((district: IDistrict) => {
             const listPoint = district.point;
-            let resultMap = listPoint.map(({ code: value, name: name }) => ({
+            const resultMap = listPoint.map(({ code: value, name: name }) => ({
                 value: district.code + "-" + value,
                 name: district.name + "-" + name,
             }));
@@ -362,7 +362,7 @@ class LocationService {
             // .select("district.point.code district.point.name")
             .exec();
         console.log(all);
-        let result = [] as ILocationGrouped[];
+        const result = [] as ILocationGrouped[];
         const transformedData = all.map((location) => {
             const header = location.name;
             const point = location.district.flatMap((district) => {

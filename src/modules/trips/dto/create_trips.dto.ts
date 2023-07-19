@@ -24,6 +24,6 @@ export default class CreateTripDTO {
     public s_journey_date: string | undefined;
 }
 interface IPointDetail {
-    point_id: String;
-    district_id: String;
+    point_id: string;
+    district_id: string;
 }

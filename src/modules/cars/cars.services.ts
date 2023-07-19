@@ -31,7 +31,7 @@ class CarsService {
                 // }
             )
             .exec();
-        let configOption = list.map(({ _id: value, name: name }) => ({
+        const configOption = list.map(({ _id: value, name: name }) => ({
             value,
             name,
         }));
@@ -54,14 +54,14 @@ class CarsService {
         return cars;
     }
 
-    public async searchCar(name: String): Promise<ICar[]> {
-        let query = {
+    public async searchCar(name: string): Promise<ICar[]> {
+        const query = {
             name: `/${name}/`,
         };
         const cars = await this.carModel.find(query).exec();
         return cars;
     }
-    public async getCar(id: String): Promise<ICar> {
+    public async getCar(id: string): Promise<ICar> {
         const car = await this.carModel.findOne({ id }).exec();
         if (!car) {
             throw new HttpException(405, "Id not exist");
