@@ -8,7 +8,7 @@ import IBookingTrip from "./interfaces/booking-trip.interface";
 import { Trip } from "@modules/trips";
 import { Customer, ICustomer } from "@modules/customer";
 import SwapSeatDTO from "./dto/seat_swap.dto";
-
+import { v4 as uuidv4 } from "uuid";
 // import ICarDetail from "./interfaces/carDetail.interface";
 
 class BookingService {
@@ -22,10 +22,7 @@ class BookingService {
 
         if (!data.customer!._id || data.customer!._id == "") {
             let check_customer = await this.customerModel.find({
-                "$or": [
-                    { phonenumber: data.customer!.phonenumber },
-                    { email: data.customer!.email },
-                ],
+                phonenumber: data.customer!.phonenumber,
             });
             // console.log(check_customer);
             if (!check_customer || check_customer.length == 0) {
@@ -36,7 +33,7 @@ class BookingService {
                     // name: data.customer!.name ,
                 });
                 data!.customer = customer_created as ICustomer;
-                console.log(data);
+                // console.log(data);//
             }
             // else {
             //     throw new HttpException(409, "Email đã tồn tại");
@@ -46,6 +43,9 @@ class BookingService {
             journey_date: data.journey_date,
             trip_id: data.trip_id,
         };
+        const ticket_code = uuidv4();
+        //KTra xem trùng chỗ nào k
+        //ticket_code = ticket_code
         const listBooked = await this.bookingModel.find(query).exec();
         let listBookedSeat: Array<string> = [];
         await listBooked.forEach((book) => {
@@ -63,13 +63,27 @@ class BookingService {
             );
         } else {
             const documents = [];
+            // const list_ticket: Array<String> = [];
+            // const ticket_code = uuidv4();
+            data!.customer = {
+                ...data!.customer,
+                times_booking: data!.customer!.times_booking
+                    ? 1
+                    : data!.customer!.times_booking + 1,
+            } as ICustomer;
             for (let seat of selectedSeats) {
-                const newObject = { ...data } as Record<string, any>;
+                const newObject = {
+                    ...data,
+                    ticket_code: ticket_code,
+                } as Record<string, any>;
                 newObject.seat = seat;
                 delete newObject.selected_seats;
                 documents.push(newObject);
             }
             await this.bookingModel.create(documents);
+            // bookingDetail.forEach((item) => {
+            //     list_ticket.push(item._id as String);
+            // });
         }
     }
     public async getSearchBooking(
@@ -272,7 +286,7 @@ class BookingService {
         if (isEmptyObject(data)) {
             throw new HttpException(400, "Model is empty");
         }
-
+        const ticket_code = uuidv4();
         const query = {
             journey_date: data.journey_date,
             trip_id: data.trip_id,
@@ -309,7 +323,10 @@ class BookingService {
                 .exec();
             const documents = [];
             for (let seat of selectedSeats) {
-                const newObject = { ...data } as Record<string, any>;
+                const newObject = {
+                    ...data,
+                    ticket_code: ticket_code,
+                } as Record<string, any>;
                 newObject.seat = seat;
                 delete newObject.selected_seats;
                 documents.push(newObject);
@@ -371,5 +388,21 @@ class BookingService {
             throw new HttpException(409, "Lỗi không xoá được");
         }
     }
+
+    // public async getChartYearData(year: string): Promise<void> {
+    //     if (!year) {
+    //         throw new HttpException(400, "Data is empty");
+    //     }
+    //     let yearNumber;
+    //     if (year === "") {
+    //         yearNumber = new Date().getFullYear();
+    //     } else {
+    //         yearNumber = parseFloat(year);
+    //     }
+
+    //     if (!result) {
+    //         throw new HttpException(409, "Lỗi không xoá được");
+    //     }
+    // }
 }
 export default BookingService;

@@ -14,6 +14,7 @@ export default interface IBooking {
     fare: string;
     journey_date: Date;
     status: string;
+    ticket_code: string;
     status_payment: string;
     status_ticket: string;
 }

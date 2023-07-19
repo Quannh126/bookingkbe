@@ -15,7 +15,7 @@ import { UploadRoute } from "@modules/upload/users";
 import { PermissionRoute } from "@modules/permissions";
 import { CoachRoute } from "@modules/coach";
 import { PaymentRoute } from "@modules/payment";
-
+// import { UserRoute } from "@modules/users";
 validateEnv();
 const routes = [
     new IndexRoute(),
@@ -31,6 +31,7 @@ const routes = [
     new PermissionRoute(),
     new CoachRoute(),
     new PaymentRoute(),
+    // new UserRoute()
 ];
 const app = new App(routes);
 

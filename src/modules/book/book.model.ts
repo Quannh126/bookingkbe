@@ -62,10 +62,15 @@ const BookingSchema = new Schema<IBooking & mongoose.Document>({
     note: {
         type: String,
     },
+    ticket_code: {
+        type: String,
+        required: true,
+    },
     status_payment: {
         type: String,
         required: true,
     },
+
     status_ticket: {
         type: String,
         require: true,

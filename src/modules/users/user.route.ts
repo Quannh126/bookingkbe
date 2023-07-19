@@ -8,6 +8,7 @@ import {
 } from "@core/middlewares";
 import RegisterDto from "./dtos/register.dto";
 import { rolesMap } from "@core/utils/roles";
+import UpdateUserDTO from "./dtos/update-user.dto";
 export default class UserRoute implements Route {
     public path = "/users";
     public router = Router();
@@ -44,6 +45,13 @@ export default class UserRoute implements Route {
             authMiddleware,
             verifyRolesMiddleware(rolesMap[this.path]),
             this.userController.deleteUser
+        );
+        this.router.put(
+            this.path,
+            authMiddleware,
+            verifyRolesMiddleware(rolesMap[this.path]),
+            validateMiddleware(UpdateUserDTO, true),
+            this.userController.updateUser
         );
     }
 }

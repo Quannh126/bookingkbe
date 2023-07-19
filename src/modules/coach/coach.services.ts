@@ -12,7 +12,7 @@ import SwapSeatDTO from "@modules/book/dto/seat_swap.dto";
 import CheckSeatDTO from "./dto/check-seat.dto";
 import AddBookingDto from "@modules/book/dto/add_booking.dto";
 import Payment from "@modules/payment/payment.model";
-
+import { v4 as uuidv4 } from "uuid";
 // import ICarDetail from "./interfaces/carDetail.interface";
 
 class CoachService {
@@ -22,17 +22,78 @@ class CoachService {
     public paymentModel = Payment;
     public async getSearchBooking(
         journey_date: string,
-        route: string,
-        pickup_point: string,
-        dropoff_point: string,
-        type_car: string,
-        capacity: string
+        startLocation: string,
+        endLocation: string,
+        times: string,
+        gn: string,
+        gt: string,
+        available_seat: string
     ): Promise<Array<IBookingTrip>> {
-        if (!journey_date || !route || route.split("-").length != 2) {
+        if (!journey_date) {
             throw new HttpException(400, "Query error");
         }
+        let from_id, to_id, dropoff_point: string, pickup_point: string;
+
+        pickup_point = !startLocation
+            ? ""
+            : startLocation.split("-")[1] + "-" + startLocation.split("-")[2];
+        dropoff_point = !endLocation
+            ? ""
+            : endLocation.split("-")[1] + "-" + endLocation.split("-")[2];
+        from_id = !startLocation
+            ? { "$exists": true }
+            : startLocation.split("-")[0];
+        to_id = !endLocation ? { "$exists": true } : endLocation.split("-")[0];
+        // Kiểu xe
+        let type_car;
+        if (gn == "true" && gt == "false") {
+            type_car = "Giường nằm";
+        } else if (gn == "false" && gt == "true") {
+            type_car = "Ghế thường";
+        } else {
+            type_car = "";
+        }
         const tc = !type_car ? { "$exists": true } : type_car;
-        const cp = !capacity ? { "$exists": true } : capacity;
+
+        //Thời gian
+        let query;
+        if (times === "") {
+            query = [{}];
+        } else {
+            const timeRanges = times.split(",");
+            const orConditions = timeRanges.map((range) => {
+                const [start, end] = range.split("-");
+                return {
+                    "$expr": {
+                        "$and": [
+                            {
+                                "$gte": [
+                                    { "$substr": ["$departure_time", 0, 5] },
+                                    start,
+                                ],
+                            },
+                            {
+                                "$lt": [
+                                    { "$substr": ["$departure_time", 0, 5] },
+                                    end,
+                                ],
+                            },
+                        ],
+                    },
+                };
+            });
+            query = orConditions;
+        }
+        let av = "0";
+        if (!available_seat || available_seat === "") {
+            av = "0";
+        } else {
+            av = available_seat;
+        }
+        // console.log(available_seat);
+        const startTime =
+            !times || times === "" ? "00:00" : times.split("-")[0];
+        const endTime = !times || times === "" ? "23:59" : times.split("-")[1];
         const dd = !dropoff_point
             ? { "$exists": true }
             : Number(dropoff_point.split("-")[0]);
@@ -152,6 +213,29 @@ class CoachService {
                     "from_id": "$from_id",
                     "to_id": "$to_id",
                     "journey_date": journey_date,
+                    "available_seat": {
+                        "$cond": [
+                            {
+                                "$eq": ["$bookings", []],
+                            },
+                            "$capacity",
+                            {
+                                "$let": {
+                                    "vars": {
+                                        "seatsBooked": {
+                                            "$size": "$bookings",
+                                        },
+                                    },
+                                    "in": {
+                                        "$subtract": [
+                                            { "$toInt": "$capacity" },
+                                            "$$seatsBooked",
+                                        ],
+                                    },
+                                },
+                            },
+                        ],
+                    },
                     "seat_booked": {
                         "$cond": [
                             {
@@ -202,15 +286,23 @@ class CoachService {
                 },
             },
             {
+                "$addFields": {
+                    "available_seat_int": { "$toInt": "$available_seat" },
+                },
+            },
+            {
                 "$match": {
-                    "from_id": route.split("-")[0],
-                    "to_id": route.split("-")[1],
+                    "from_id": from_id,
+                    "to_id": to_id,
                     "dropoff_point.district_id": dd,
                     "dropoff_point.point_id": dp,
                     "pickup_point.district_id": pd,
                     "pickup_point.point_id": pp,
                     "car.type_car": tc,
-                    "car.capacity": cp,
+                    "available_seat_int": {
+                        "$gte": parseInt(av!),
+                    },
+                    "$or": query,
                 },
             },
         ];
@@ -228,10 +320,7 @@ class CoachService {
 
         if (!data.customer!._id || data.customer!._id == "") {
             let check_customer = await this.customerModel.findOne({
-                "$or": [
-                    { phonenumber: data.customer!.phonenumber },
-                    { email: data.customer!.email },
-                ],
+                phonenumber: data.customer!.phonenumber,
             });
             // console.log(check_customer);
             if (!check_customer) {
@@ -240,15 +329,13 @@ class CoachService {
                     phonenumber: data.customer!.phonenumber,
                     email: data.customer!.email,
                     // name: data.customer!.name ,
+                    times_booking: 1,
                 });
                 data!.customer = customer_created as ICustomer;
                 // console.log(data);
             } else {
                 data!.customer = check_customer as ICustomer;
             }
-            // else {
-            //     throw new HttpException(409, "Email đã tồn tại");
-            // }
         }
         const query = {
             journey_date: data.journey_date,
@@ -259,6 +346,7 @@ class CoachService {
         await listBooked.forEach((book) => {
             listBookedSeat.push(book.seat);
         });
+
         const selectedSeats: Array<string> = data.selected_seats!.split("-");
         const commonSeat = await listBookedSeat.filter((x) =>
             selectedSeats.includes(x)
@@ -272,29 +360,37 @@ class CoachService {
         } else {
             const documents = [];
             const list_ticket: Array<String> = [];
+            const ticket_code = uuidv4();
+            data!.customer = {
+                ...data!.customer,
+                times_booking: data!.customer!.times_booking
+                    ? 1
+                    : data!.customer!.times_booking + 1,
+            } as ICustomer;
             for (let seat of selectedSeats) {
-                const newObject = { ...data } as Record<string, any>;
+                const newObject = {
+                    ...data,
+                    ticket_code: ticket_code,
+                } as Record<string, any>;
                 newObject.seat = seat;
-                newObject.status = delete newObject.selected_seats;
+                delete newObject.selected_seats;
+
                 documents.push(newObject);
             }
             const bookingDetail = await this.bookingModel.create(documents);
             bookingDetail.forEach((item) => {
                 list_ticket.push(item._id as String);
             });
-            if (data.is_payment_online) {
-                const paymentData = await this.paymentModel.create({
-                    trip_id: data.trip_id,
-                    customer_id: data!.customer?._id,
-                    list_ticket: list_ticket,
-                    payment_amount: data.fare,
-                    payment_code: "",
-                    payment_status: "Processing",
-                });
-                return paymentData._id;
-            } else {
-                return "success";
-            }
+
+            const paymentData = await this.paymentModel.create({
+                trip_id: data.trip_id,
+                customer_id: data!.customer?._id,
+                list_ticket: list_ticket,
+                payment_amount: data.fare,
+                payment_code: "",
+                payment_status: "Processing",
+            });
+            return paymentData._id;
         }
     }
 }

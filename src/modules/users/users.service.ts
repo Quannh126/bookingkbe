@@ -9,6 +9,9 @@ import IUser from "./users.interface";
 import jwt from "jsonwebtoken";
 import { IPagination } from "@core/interfaces";
 import { AccessTokenData } from "@modules/auth/auth.interface";
+import UpdateUserDTO from "./dtos/update-user.dto";
+import IDataUser from "./dtos/dataUser";
+import moment from "moment";
 class UserService {
     public userModel = User;
 
@@ -33,14 +36,43 @@ class UserService {
             password: hashedPassword,
             avatar: avatar,
             isVerified: true,
+            status: "Active",
             date: Date.now(),
         });
         return this.createToken(createUser);
     }
-    public async getAll(): Promise<IUser[]> {
-        const users = await this.userModel.find().exec();
 
-        return users;
+    public async updateUser(data: UpdateUserDTO): Promise<any> {
+        if (isEmptyObject(data)) {
+            throw new HttpException(400, "Model is empty");
+        }
+        const result = await this.userModel.findByIdAndUpdate(data!._id, {
+            ...data,
+        });
+
+        if (!result) {
+            throw new HttpException(400, "Id valid");
+        }
+
+        return { message: "success" };
+    }
+    public async getAll(): Promise<IDataUser[]> {
+        const users = await this.userModel.find().exec();
+        const transformedData: IDataUser[] = users.map((user) => {
+            return {
+                _id: user._id,
+                fullname: user.fullname,
+                phone: user.phone,
+                username: user.username,
+                role: user.role,
+                email: user.email || "",
+                date: new Date(user.date),
+                avatar: user.avatar,
+                stringDate: moment(user.date).format("DD/MM/YYYY, hh:mm"),
+                status: user.status,
+            };
+        });
+        return transformedData;
     }
     public async getAllPaging(
         keyword: string,

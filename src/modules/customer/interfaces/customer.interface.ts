@@ -4,5 +4,5 @@ export default interface ICustomer {
     address?: string;
     phonenumber: String;
     email?: string;
-    times_booking?: Number;
+    times_booking: number;
 }

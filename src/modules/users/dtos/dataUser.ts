@@ -1,15 +1,12 @@
-export default interface IUser {
+export default interface IDataUSer {
     _id: string;
     fullname: string;
     phone: string;
     username: string;
-    email: string;
     role: string;
-    resetPasswordLink: string;
-    isVerified: boolean;
-    salt: string;
+    email: string;
     date: Date;
     avatar: string;
-    password: string;
+    stringDate: string;
     status: string;
 }

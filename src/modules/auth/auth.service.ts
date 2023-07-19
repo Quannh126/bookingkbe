@@ -12,11 +12,14 @@ class AuthService {
 
     public async login(model: LoginDto): Promise<TokenData> {
         if (isEmptyObject(model)) {
-            throw new HttpException(400, "Model is empty");
+            throw new HttpException(400, "Không có dữ liệu");
         }
         const user = await this.userModel.findOne({ username: model.username });
         if (!user) {
-            throw new HttpException(409, `Email not exist`);
+            throw new HttpException(
+                409,
+                `Tên đăng nhập hoặc mật khẩu không đúng`
+            );
         }
         // console.log(model.password + "---" + user.password);
         const isMatchPassword = await bcryptjs.compare(
@@ -24,7 +27,10 @@ class AuthService {
             user.password
         );
         if (!isMatchPassword) {
-            throw new HttpException(409, `Credential is not valid`);
+            throw new HttpException(
+                409,
+                `Tên đăng nhập hoặc mật khẩu không đúng`
+            );
         }
         return this.createAllToken(user);
     }
@@ -32,7 +38,7 @@ class AuthService {
     public async getCurrentUser(uid: string): Promise<IProfile> {
         let user = await this.userModel.findById({ _id: uid });
         if (!user) {
-            throw new HttpException(404, "User is not exists");
+            throw new HttpException(403, "Người dùng không tồn tại");
         }
         return {
             phone: user.phone,
@@ -46,7 +52,7 @@ class AuthService {
     public async refreshToken(userId: string): Promise<AccessTokenData> {
         const user = await this.userModel.findById(userId);
         if (!user) {
-            throw new HttpException(409, `Email not exist`);
+            throw new HttpException(409, `Người dùng không tồn tại`);
         }
         return this.createToken(user);
     }

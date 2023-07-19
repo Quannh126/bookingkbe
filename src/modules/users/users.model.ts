@@ -6,7 +6,10 @@ const UserSchema = new Schema<IUser & mongoose.Document>({
         type: String,
         require: true,
     },
-
+    email: {
+        type: String,
+        require: true,
+    },
     phone: {
         type: String,
         require: true,
@@ -43,6 +46,12 @@ const UserSchema = new Schema<IUser & mongoose.Document>({
     password: {
         type: String,
         require: true,
+    },
+    status: {
+        type: String,
+        require: true,
+        default: "Active",
+        enum: ["Active", "Inactive"],
     },
 });
 const User = model<IUser & mongoose.Document>("User", UserSchema);
