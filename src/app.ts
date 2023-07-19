@@ -41,7 +41,7 @@ class App {
             this.app.use(helmet());
             this.app.use(
                 cors({
-                    origin: "https://booking-k.vercel.app/",
+                    origin: "https://booking-k.vercel.app",
                     credentials: true,
                 })
             );
