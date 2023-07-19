@@ -26,7 +26,7 @@ class PermissionService {
     }
 
     public async removePermission(role: string): Promise<IPermission> {
-        if (isEmptyObject(role)) {
+        if (role) {
             throw new HttpException(400, "Model is empty");
         }
         const result = await this.permissionModel.findOneAndDelete({
@@ -56,7 +56,7 @@ class PermissionService {
         return result;
     }
     public async getPermission(role: string): Promise<IPermission> {
-        if (isEmptyObject(role)) {
+        if (!role) {
             throw new HttpException(400, "Model is empty");
         }
         const result = await this.permissionModel.findOne({
