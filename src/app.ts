@@ -1,3 +1,4 @@
+import "dotenv/config";
 import express from "express";
 import { Route } from "@core/interfaces";
 import mongoose from "mongoose";
