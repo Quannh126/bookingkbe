@@ -9,8 +9,7 @@
     "scripts": {
         "start": "ts-node src/server.ts",
         "server": "nodemon src/server.ts",
-        "debug": "nodemon  src/server.ts -- --inspect 0.0.0.0:9229",
-        "postinstall": "tsc"
+        "debug": "nodemon  src/server.ts -- --inspect 0.0.0.0:9229"
     },
     "dependencies": {
         "@aws-sdk/client-s3": "^3.367.0",
