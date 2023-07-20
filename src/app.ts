@@ -64,7 +64,7 @@ class App {
         this.server = http.createServer(this.app);
         this.io = new socketIo.Server(this.server, {
             cors: {
-                origin: "*",
+                origin: this.production ? "https://booking-k.vercel.app" : "*",
                 methods: ["GET", "POST"],
             },
         });
@@ -72,22 +72,13 @@ class App {
 
         this.io.on("connection", (socket: socketIo.Socket) => {
             Logger.warn("a user connected : " + socket.id);
-            // console.log("a client connected: " + socket.id);
-            // //socket.emit("getData", "Hello " + socket.id);
-            // socket.on("get_init", function (data) {
-            //     // Logger.warn("a user " + data.listCar + " connected");
-            //     console.log("List coaches: " + data.listCar);
-            //     listCar[socket.id] = data.listCar;
-            // });
+
             socket.on("changeSeats", function (data) {
                 Logger.warn("a user " + socket.id + " connected");
                 // console.log("Change: " + data.info);
                 socket.broadcast.emit("changeData", { info: socket.id });
             });
             socket.on("disconnect", function () {
-                // Logger.warn("user " + socket.id + " disconnected");
-                // // remove saved socket from users object
-                // delete listCar[socket.id];
                 Logger.warn("socket disconnected : " + socket.id);
             });
         });
