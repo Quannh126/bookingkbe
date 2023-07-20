@@ -49,7 +49,7 @@ class App {
         } else {
             this.app.use(
                 cors({
-                    origin: "https://booking-k.vercel.app",
+                    origin: true,
                     credentials: true,
                 })
             );
@@ -65,33 +65,30 @@ class App {
         this.io = new socketIo.Server(this.server, {
             cors: {
                 origin: "*",
+                methods: ["GET", "POST"],
             },
         });
-        this.app.set("socketio", this.io);
+        this.app.set("socket-io", this.io);
 
-        const listCar: any = {};
         this.io.on("connection", (socket: socketIo.Socket) => {
-            //Logger.warn("a user connected : " + socket.id);
-            console.log("a client connected: " + socket.id);
-            //socket.emit("getData", "Hello " + socket.id);
-
-            socket.on("get_init", function (data) {
-                // Logger.warn("a user " + data.listCar + " connected");
-                console.log("List coaches: " + data.listCar);
-                listCar[socket.id] = data.listCar;
-            });
-            socket.on("seatBooked", function (data) {
-                // Logger.warn("a user " + data.listCar + " connected");
-                console.log(
-                    "List coaches: " + data.car_id + "-" + data.seatCount
-                );
-                socket.emit("change_data");
+            Logger.warn("a user connected : " + socket.id);
+            // console.log("a client connected: " + socket.id);
+            // //socket.emit("getData", "Hello " + socket.id);
+            // socket.on("get_init", function (data) {
+            //     // Logger.warn("a user " + data.listCar + " connected");
+            //     console.log("List coaches: " + data.listCar);
+            //     listCar[socket.id] = data.listCar;
+            // });
+            socket.on("changeSeats", function (data) {
+                Logger.warn("a user " + socket.id + " connected");
+                // console.log("Change: " + data.info);
+                socket.broadcast.emit("changeData", { info: socket.id });
             });
             socket.on("disconnect", function () {
-                Logger.warn("user " + listCar[socket.id] + " disconnected");
-                // remove saved socket from users object
-                delete listCar[socket.id];
-                //Logger.warn("socket disconnected : " + socket.id);
+                // Logger.warn("user " + socket.id + " disconnected");
+                // // remove saved socket from users object
+                // delete listCar[socket.id];
+                Logger.warn("socket disconnected : " + socket.id);
             });
         });
     }
@@ -99,7 +96,7 @@ class App {
         this.app.use(errorMiddleware);
     }
     public listen() {
-        this.app.listen(this.port, () => {
+        this.server.listen(this.port, () => {
             Logger.info(`Server is listening on port ${this.port}`);
         });
     }

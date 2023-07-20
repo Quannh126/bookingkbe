@@ -16,7 +16,6 @@ const CustomerSchema = new Schema<ICustomer & mongoose.Document>({
     },
     email: {
         type: String,
-        unique: true,
     },
     times_booking: {
         type: Number,
