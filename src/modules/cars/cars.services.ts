@@ -20,16 +20,7 @@ class CarsService {
     }
     public async getCarsAlready(): Promise<Array<NameValue>> {
         const list = await this.carModel
-            .find(
-                { status: "Yet To Start" }
-                // {
-                //     _id: 1,
-                //     name: 1,
-                //     // driver_name: 1,
-                //     // license_plate: 1,
-                //     // phonenumber: 1,
-                // }
-            )
+            .find({ $or: [{ status: "Yet To Start" }, { status: "Running" }] })
             .exec();
         const configOption = list.map(({ _id: value, name: name }) => ({
             value,
@@ -120,6 +111,27 @@ class CarsService {
             throw new HttpException(400, "Id valid");
         }
         return result;
+    }
+    public async getDonutData(): Promise<any> {
+        const cars = await this.carModel
+            .find({})
+            .exec()
+            .catch((err) => {
+                throw new HttpException(405, err.message);
+            });
+        let countRunning = 0;
+        let countYettostart = 0;
+        let countMaintenance = 0;
+        cars.forEach((car, index) => {
+            if (car.status === "Running") {
+                countRunning++;
+            } else if (car.status === "Yet To Start") {
+                countYettostart++;
+            } else {
+                countMaintenance++;
+            }
+        });
+        return [countRunning, countYettostart, countMaintenance];
     }
 }
 export default CarsService;

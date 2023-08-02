@@ -32,18 +32,20 @@ class CoachService {
         if (!journey_date) {
             throw new HttpException(400, "Query error");
         }
-        let from_id, to_id, dropoff_point: string, pickup_point: string;
+        // let from_id, to_id, dropoff_point: string, pickup_point: string;
 
-        pickup_point = !startLocation
+        const pickup_point = !startLocation
             ? ""
             : startLocation.split("-")[1] + "-" + startLocation.split("-")[2];
-        dropoff_point = !endLocation
+        const dropoff_point = !endLocation
             ? ""
             : endLocation.split("-")[1] + "-" + endLocation.split("-")[2];
-        from_id = !startLocation
+        const from_id = !startLocation
             ? { "$exists": true }
             : startLocation.split("-")[0];
-        to_id = !endLocation ? { "$exists": true } : endLocation.split("-")[0];
+        const to_id = !endLocation
+            ? { "$exists": true }
+            : endLocation.split("-")[0];
         // Kiểu xe
         let type_car;
         if (gn == "true" && gt == "false") {
@@ -386,6 +388,7 @@ class CoachService {
                 trip_id: data.trip_id,
                 customer_id: data!.customer?._id,
                 list_ticket: list_ticket,
+                ticket_code: ticket_code,
                 payment_amount: data.fare,
                 payment_code: "",
                 payment_status: "Processing",
