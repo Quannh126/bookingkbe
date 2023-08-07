@@ -9,6 +9,7 @@ import { Trip } from "@modules/trips";
 import { Customer, ICustomer } from "@modules/customer";
 import SwapSeatDTO from "./dto/seat_swap.dto";
 import { v4 as uuidv4 } from "uuid";
+import moment from "moment";
 // import ICarDetail from "./interfaces/carDetail.interface";
 
 class BookingService {
@@ -42,6 +43,7 @@ class BookingService {
         const query = {
             journey_date: data.journey_date,
             trip_id: data.trip_id,
+            status_ticket: { "$not": { "$eq": "Cancelled" } },
         };
         const ticket_code = uuidv4();
         //KTra xem trùng chỗ nào k
@@ -75,6 +77,8 @@ class BookingService {
                 const newObject = {
                     ...data,
                     ticket_code: ticket_code,
+                    status_ticket:
+                        data.status_payment === "paid" ? "Paid" : "Reserved",
                 } as Record<string, any>;
                 newObject.seat = seat;
                 delete newObject.selected_seats;
@@ -114,7 +118,7 @@ class BookingService {
                     "_id": {
                         "$toString": "$_id",
                     },
-                    "trip_id": "$_id",
+                    "trip_id": "$trip_id",
                     "capacity": "$car.capacity",
                     "from_id": "$from_id",
                     "to_id": "$to_id",
@@ -126,6 +130,8 @@ class BookingService {
                     "seats_booked": "$seats_booked",
                     "fare": "$fare",
                     "sell_type": "$sell_type",
+                    "status_ticket": "$status_ticket",
+                    "ticket_code": "$ticket_code",
                 },
             },
             {
@@ -199,6 +205,8 @@ class BookingService {
                     "seats_booked": "$seats_booked",
                     "fare": "$fare",
                     "sell_type": "$sell_type",
+                    "status_ticket": "$status_ticket",
+                    "ticket_code": "$ticket_code",
                 },
             },
             {
@@ -213,6 +221,8 @@ class BookingService {
                     "sell_type": "$sell_type",
                     "from_id": "$from_id",
                     "to_id": "$to_id",
+                    "status_ticket": "$status_ticket",
+                    "ticket_code": "$ticket_code",
                     "journey_date": journey_date,
                     "seat_booked": {
                         "$cond": [
@@ -227,7 +237,18 @@ class BookingService {
                                     "vars": {
                                         "seatsBooked": {
                                             "$toString": {
-                                                "$size": "$bookings",
+                                                "$size": {
+                                                    "$filter": {
+                                                        "input": "$bookings",
+                                                        "as": "booking_f",
+                                                        "cond": {
+                                                            "$strcasecmp": [
+                                                                "$$booking_f.status_ticket",
+                                                                "Cancelled",
+                                                            ],
+                                                        },
+                                                    },
+                                                },
                                             },
                                         },
                                     },
@@ -250,7 +271,19 @@ class BookingService {
                             [],
                             {
                                 "$map": {
-                                    "input": "$bookings",
+                                    // "input": "$bookings",
+                                    "input": {
+                                        "$filter": {
+                                            "input": "$bookings",
+                                            "as": "booking_f",
+                                            "cond": {
+                                                "$strcasecmp": [
+                                                    "$$booking_f.status_ticket",
+                                                    "Cancelled",
+                                                ],
+                                            },
+                                        },
+                                    },
                                     "as": "booking",
                                     "in": {
                                         "booking": "$$booking",
@@ -380,29 +413,101 @@ class BookingService {
             throw new HttpException(400, "Data is empty");
         }
         const list = await list_seat.split("-").map((item) => Number(item));
-        const result = await this.bookingModel.deleteMany({
-            trip_id: trip_id,
-            seat: { $in: list },
-        });
+        const result = await this.bookingModel.updateMany(
+            {
+                trip_id: trip_id,
+                seat: { $in: list },
+            },
+            { "status_ticket": "Cancelled" }
+        );
         if (!result) {
             throw new HttpException(409, "Lỗi không xoá được");
         }
     }
 
-    // public async getChartYearData(year: string): Promise<void> {
-    //     if (!year) {
-    //         throw new HttpException(400, "Data is empty");
-    //     }
-    //     let yearNumber;
-    //     if (year === "") {
-    //         yearNumber = new Date().getFullYear();
-    //     } else {
-    //         yearNumber = parseFloat(year);
-    //     }
+    public async getDonutData(): Promise<any> {
+        // const currentDate = moment("10-08-2023").format("YYYY-MM-DD");
+        const currentDate = "2023-08-10";
+        console.log(currentDate);
+        const listBookingCurrentDate = await this.bookingModel
+            .find({ journey_date: currentDate })
+            .exec();
+        // eslint-disable-next-line prefer-const
+        let listTicket: Array<any> = [];
+        // eslint-disable-next-line prefer-const
+        let listBooking: Array<any> = [];
+        // eslint-disable-next-line prefer-const
+        let result2: [number, number, number] = [0, 0, 0];
 
-    //     if (!result) {
-    //         throw new HttpException(409, "Lỗi không xoá được");
+        listBookingCurrentDate.forEach((booking) => {
+            // if (listTicket.indexOf(booking.ticket_code) < 0) {
+            //     listTicket.push(booking.ticket_code);
+            //     listBooking.push(booking);
+            //     const newIndex = listTicket.length - 1;
+            //     result[newIndex] = 1;
+            //     // console.log(listTicket);
+            // } else {
+            //     const findTicket = listTicket.indexOf(ticket);
+            //     result[findTicket] = result[findTicket] + 1;
+            // }
+
+            if (listTicket.indexOf(booking.ticket_code) < 0) {
+                listTicket.push(booking.ticket_code);
+                listBooking.push(booking);
+                // console.log(listTicket);
+            }
+        });
+
+        // console.log(listBooking);
+
+        listBooking.forEach((booking) => {
+            if (booking.status_ticket === "Reserved")
+                result2[0] = result2[0] + 1;
+            else if (booking.status_ticket === "Paid") result2[1]++;
+            else result2[2]++;
+        });
+
+        return result2;
+    }
+
+    // public async getDataOfYear(year:number): Promise<any>{
+    //     if(!year || year < 0){
+    //         year =(new Date()).getFullYear();
+
     //     }
+    //     console.log(year)
+    //     const pipeline = [
+    //         {
+    //           "$match": {
+    //             "status_ticket": "Paid", // Chỉ lấy các tài liệu có trạng thái "Paid"
+    //           },
+    //         },
+    //         {
+    //           "$group": {
+    //             "_id": { "$month": { "$toDate": "$journey_date" } }, // Tổng hợp theo tháng (giá trị từ 1 đến 12)
+    //             "totalFare": { "$sum": { "$toDouble": "$fare" } }, // Tính tổng fare cho từng tháng
+    //           },
+    //         },
+    //         {
+    //           "$sort": {
+    //             "_id": 1,
+    //           },
+    //         },
+    //       ];
+
+    //      const result = await this.bookingModel.aggregate(pipeline)
+    //         .then((result) => {
+    //           const monthlyRevenue = Array(12).fill(0); // Khởi tạo mảng 12 phần tử với giá trị ban đầu là 0
+    //           for (const item of result) {
+    //             const monthIndex = item._id - 1; // Chuyển từ giá trị tháng (1 đến 12) thành chỉ số mảng (0 đến 11)
+    //             monthlyRevenue[monthIndex] = item.totalFare;
+    //           }
+    //           console.log(monthlyRevenue); // Mảng gồm 12 phần tử đại diện cho doanh số thu được trong 1 năm
+    //         })
+    //         .catch((error) => {
+    //           console.error("Error:", error);
+    //         });
+    //     return ''
     // }
 }
 export default BookingService;

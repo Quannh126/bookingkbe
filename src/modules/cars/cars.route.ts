@@ -33,6 +33,12 @@ export default class CarsRoute implements Route {
             this.carController.getListNameCars
         );
         this.router.get(
+            this.path + "/getDonutData",
+            authMiddleware,
+            verifyRolesMiddleware(rolesMap[this.path]),
+            this.carController.getDonut
+        );
+        this.router.get(
             this.path,
             authMiddleware,
             verifyRolesMiddleware(rolesMap[this.path]),

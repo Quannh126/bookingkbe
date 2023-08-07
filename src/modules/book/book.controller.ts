@@ -105,12 +105,25 @@ export default class BookingController {
         try {
             const { trip_id, list_seat } = req.body;
 
-            const booking = await this.bookingService.removeBooking(
+            const booking = await this.bookingService.destroyBooking(
                 trip_id,
                 list_seat
             );
             res.status(200).json({ msg: "success" });
             Logger.info(booking);
+        } catch (error) {
+            next(error);
+        }
+    };
+
+    public getDonut = async (
+        req: Request,
+        res: Response,
+        next: NextFunction
+    ) => {
+        try {
+            const result = await this.bookingService.getDonutData();
+            res.status(200).json(result);
         } catch (error) {
             next(error);
         }

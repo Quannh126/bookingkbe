@@ -89,10 +89,22 @@ export default class CarController {
     ) => {
         try {
             const model: ICarDetail = req.body;
-            await this.carService.updateCar(model);
+            // await this.carService.updateCar(model);
 
             const result = await this.carService.updateCar(model);
 
+            res.status(200).json(result);
+        } catch (error) {
+            next(error);
+        }
+    };
+    public getDonut = async (
+        req: Request,
+        res: Response,
+        next: NextFunction
+    ) => {
+        try {
+            const result = await this.carService.getDonutData();
             res.status(200).json(result);
         } catch (error) {
             next(error);

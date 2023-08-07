@@ -115,7 +115,7 @@ class CoachService {
                     "_id": {
                         "$toString": "$_id",
                     },
-                    "trip_id": "$_id",
+                    "trip_id": "$trip_id",
                     "capacity": "$car.capacity",
                     "from_id": "$from_id",
                     "to_id": "$to_id",
@@ -225,7 +225,18 @@ class CoachService {
                                 "$let": {
                                     "vars": {
                                         "seatsBooked": {
-                                            "$size": "$bookings",
+                                            "$size": {
+                                                "$filter": {
+                                                    "input": "$bookings",
+                                                    "as": "booking_f",
+                                                    "cond": {
+                                                        "$strcasecmp": [
+                                                            "$$booking_f.status_ticket",
+                                                            "Cancelled",
+                                                        ],
+                                                    },
+                                                },
+                                            },
                                         },
                                     },
                                     "in": {
@@ -274,7 +285,18 @@ class CoachService {
                             [],
                             {
                                 "$map": {
-                                    "input": "$bookings",
+                                    "input": {
+                                        "$filter": {
+                                            "input": "$bookings",
+                                            "as": "booking_f",
+                                            "cond": {
+                                                "$strcasecmp": [
+                                                    "$$booking_f.status_ticket",
+                                                    "Cancelled",
+                                                ],
+                                            },
+                                        },
+                                    },
                                     "as": "booking",
                                     "in": {
                                         "booking": "$$booking",
@@ -339,9 +361,11 @@ class CoachService {
                 data!.customer = check_customer as ICustomer;
             }
         }
+        //check trung lap cho
         const query = {
             journey_date: data.journey_date,
             trip_id: data.trip_id,
+            status_ticket: { "$not": { "$eq": "Cancelled" } },
         };
         const listBooked = await this.bookingModel.find(query).exec();
         const listBookedSeat: Array<string> = [];
