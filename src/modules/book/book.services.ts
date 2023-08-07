@@ -10,6 +10,7 @@ import { Customer, ICustomer } from "@modules/customer";
 import SwapSeatDTO from "./dto/seat_swap.dto";
 import { v4 as uuidv4 } from "uuid";
 import moment from "moment";
+import UpdateBookingDto from "./dto/update_book.dto";
 // import ICarDetail from "./interfaces/carDetail.interface";
 
 class BookingService {
@@ -44,6 +45,7 @@ class BookingService {
             journey_date: data.journey_date,
             trip_id: data.trip_id,
             status_ticket: { "$not": { "$eq": "Cancelled" } },
+
         };
         const ticket_code = uuidv4();
         //KTra xem trùng chỗ nào k
@@ -77,6 +79,7 @@ class BookingService {
                 const newObject = {
                     ...data,
                     ticket_code: ticket_code,
+
                     status_ticket:
                         data.status_payment === "paid" ? "Paid" : "Reserved",
                 } as Record<string, any>;
@@ -315,15 +318,12 @@ class BookingService {
         return [];
     }
 
-    public async updateBooking(data: AddBookingDto): Promise<void> {
+    public async updateBooking(data: UpdateBookingDto): Promise<void> {
         if (isEmptyObject(data)) {
             throw new HttpException(400, "Model is empty");
         }
-        const ticket_code = uuidv4();
-        const query = {
-            journey_date: data.journey_date,
-            trip_id: data.trip_id,
-        };
+
+        console.log(data)
         const listCustomerBooked = await this.bookingModel.find({
             journey_date: data.journey_date,
             "customer._id": data.customer?._id,
@@ -333,6 +333,12 @@ class BookingService {
         await listCustomerBooked.forEach((book) => {
             listSeatCustomerBooked.push(book.seat);
         });
+
+        const query = {
+            journey_date: data.journey_date,
+            trip_id: data.trip_id,
+            status_ticket: { "$not": { "$eq": "Cancelled" } },
+        };
         const listBooked = await this.bookingModel.find(query).exec();
         const listBookedSeat: Array<string> = [];
         await listBooked.forEach((book) => {
@@ -358,7 +364,9 @@ class BookingService {
             for (const seat of selectedSeats) {
                 const newObject = {
                     ...data,
-                    ticket_code: ticket_code,
+                    ticket_code: data.ticket_code,
+                    status_ticket:
+                        data.status_payment === "paid" ? "Paid" : "Reserved",
                 } as Record<string, any>;
                 newObject.seat = seat;
                 delete newObject.selected_seats;
@@ -427,87 +435,199 @@ class BookingService {
 
     public async getDonutData(): Promise<any> {
         // const currentDate = moment("10-08-2023").format("YYYY-MM-DD");
-        const currentDate = "2023-08-10";
-        console.log(currentDate);
-        const listBookingCurrentDate = await this.bookingModel
-            .find({ journey_date: currentDate })
-            .exec();
-        // eslint-disable-next-line prefer-const
-        let listTicket: Array<any> = [];
-        // eslint-disable-next-line prefer-const
-        let listBooking: Array<any> = [];
-        // eslint-disable-next-line prefer-const
-        let result2: [number, number, number] = [0, 0, 0];
+        const currentDate = new Date()
+        let result2: Array<number> = [];
+        const pipeline = [
+            {
+                '$match': {
+                    'journey_date': new Date(moment().format("YYYY-MM-DD"))
+                }
+            },
+            {
+                '$group': {
+                    '_id': '$ticket_code',
+                    'status_ticket': {
+                        '$first': '$status_ticket'
+                    },
 
-        listBookingCurrentDate.forEach((booking) => {
-            // if (listTicket.indexOf(booking.ticket_code) < 0) {
-            //     listTicket.push(booking.ticket_code);
-            //     listBooking.push(booking);
-            //     const newIndex = listTicket.length - 1;
-            //     result[newIndex] = 1;
-            //     // console.log(listTicket);
-            // } else {
-            //     const findTicket = listTicket.indexOf(ticket);
-            //     result[findTicket] = result[findTicket] + 1;
-            // }
+                }
+            },
+            {
+                '$group': {
+                    '_id': '$status_ticket',
+                    'count': {
+                        '$sum': 1
+                    },
 
-            if (listTicket.indexOf(booking.ticket_code) < 0) {
-                listTicket.push(booking.ticket_code);
-                listBooking.push(booking);
-                // console.log(listTicket);
-            }
-        });
+                }
+            },
 
-        // console.log(listBooking);
+        ]
 
-        listBooking.forEach((booking) => {
-            if (booking.status_ticket === "Reserved")
-                result2[0] = result2[0] + 1;
-            else if (booking.status_ticket === "Paid") result2[1]++;
-            else result2[2]++;
+        const result = await this.bookingModel.aggregate(pipeline).exec()
+
+
+
+        await result.forEach((booking) => {
+            result2.push(booking.count);
         });
 
         return result2;
     }
 
-    // public async getDataOfYear(year:number): Promise<any>{
-    //     if(!year || year < 0){
-    //         year =(new Date()).getFullYear();
+    public async getDataOfYear(year: number): Promise<any> {
+        if (!year || year < 0) {
+            year = (new Date()).getFullYear();
 
-    //     }
-    //     console.log(year)
-    //     const pipeline = [
-    //         {
-    //           "$match": {
-    //             "status_ticket": "Paid", // Chỉ lấy các tài liệu có trạng thái "Paid"
-    //           },
-    //         },
-    //         {
-    //           "$group": {
-    //             "_id": { "$month": { "$toDate": "$journey_date" } }, // Tổng hợp theo tháng (giá trị từ 1 đến 12)
-    //             "totalFare": { "$sum": { "$toDouble": "$fare" } }, // Tính tổng fare cho từng tháng
-    //           },
-    //         },
-    //         {
-    //           "$sort": {
-    //             "_id": 1,
-    //           },
-    //         },
-    //       ];
+        }
+        // console.log(year)
+        const pipeline = [
+            {
+                $match: {
+                    status_ticket: "Paid"
+                },
+            },
+            {
+                $group: {
+                    _id: {
+                        ticket_code: "$ticket_code",
+                    },
 
-    //      const result = await this.bookingModel.aggregate(pipeline)
-    //         .then((result) => {
-    //           const monthlyRevenue = Array(12).fill(0); // Khởi tạo mảng 12 phần tử với giá trị ban đầu là 0
-    //           for (const item of result) {
-    //             const monthIndex = item._id - 1; // Chuyển từ giá trị tháng (1 đến 12) thành chỉ số mảng (0 đến 11)
-    //             monthlyRevenue[monthIndex] = item.totalFare;
-    //           }
-    //           console.log(monthlyRevenue); // Mảng gồm 12 phần tử đại diện cho doanh số thu được trong 1 năm
-    //         })
-    //         .catch((error) => {
-    //           console.error("Error:", error);
-    //         });
-    //     return ''
-    // }
+                    journey_date: { $first: "$journey_date" },
+                    fare: { $first: "$fare" },
+                },
+            },
+            {
+                "$group": {
+                    _id: { "$month": { "$toDate": "$journey_date" } },
+                    "totalFare": { "$sum": { "$toDouble": "$fare" } },
+                },
+            },
+            {
+                "$sort": { "_id": 1 as 1 }
+            }
+        ];
+
+        const result = await this.bookingModel.aggregate(pipeline).exec()
+        const monthlyRevenue = Array(12).fill(0);
+        for (const item of result) {
+            const monthIndex = item._id - 1;
+            monthlyRevenue[monthIndex] = item.totalFare;
+        }
+        // console.log(monthlyRevenue);
+        return monthlyRevenue
+    }
+
+    public async getDataOfMonth(month: number): Promise<any> {
+        if (!month || month < 0) {
+            month = (new Date()).getMonth() + 1;
+
+        }
+        // console.log(year)
+        const today = new Date();
+        const firstDayOfMonth = new Date(today.getFullYear(), today.getMonth(), 1);
+        const lastDayOfMonth = new Date(today.getFullYear(), today.getMonth() + 1, 0);
+        console.log(moment(firstDayOfMonth).format("DD-MM-YYYY"), moment(lastDayOfMonth).format("DD-MM-YYYY"))
+        const pipeline = [
+            {
+                $match: {
+                    status_ticket: "Paid",
+                    journey_date: {
+                        $gte: firstDayOfMonth,
+                        $lte: lastDayOfMonth,
+                    },
+                },
+            },
+
+            {
+                $group: {
+                    _id: {
+                        ticket_code: "$ticket_code",
+                    },
+
+                    journey_date: { $first: "$journey_date" },
+                    fare: { $first: "$fare" },
+                },
+            },
+            {
+                $group: {
+                    _id: { $dayOfMonth: "$journey_date" },
+                    totalFare: { $sum: { $toDouble: "$fare" } },
+                },
+            },
+            {
+                $sort: {
+                    _id: 1 as 1,
+                },
+            },
+        ];
+
+        const result = await this.bookingModel.aggregate(pipeline).exec()
+        const monthlyRevenue = Array(lastDayOfMonth.getDate()).fill(0);
+        //chuyen quang mang chi co tong fare []
+        for (const item of result) {
+            const dayIndex = item._id - 1;
+            monthlyRevenue[dayIndex] = item.totalFare;
+        }
+        console.log(monthlyRevenue);
+        return monthlyRevenue;
+    }
+
+    public async getDataOfWeek(date: number): Promise<any> {
+        if (!date || date < 0) {
+            date = (new Date()).getDate();
+
+        }
+        const today = new Date();
+        const currentDay = today.getDay();
+        const daysUntil = currentDay;
+        const firstDayOfWeek = new Date(today);
+        firstDayOfWeek.setDate(today.getDate() - daysUntil);
+
+        const lastDayOfWeek = new Date(firstDayOfWeek);
+        lastDayOfWeek.setDate(firstDayOfWeek.getDate() + 7);
+        console.log(moment(firstDayOfWeek).format("DD-MM-YYYY"), moment(lastDayOfWeek).format("DD-MM-YYYY"))
+        const pipeline = [
+            {
+                $match: {
+                    status_ticket: "Paid",
+                    journey_date: {
+                        $gte: firstDayOfWeek,
+                        $lte: lastDayOfWeek,
+                    },
+                },
+            },
+            {
+                $group: {
+                    _id: {
+                        ticket_code: "$ticket_code",
+                    },
+
+                    journey_date: { $first: "$journey_date" },
+                    fare: { $first: "$fare" },
+                },
+            },
+            {
+                $group: {
+                    _id: { $dayOfWeek: "$journey_date" },
+                    totalFare: { $sum: { $toDouble: "$fare" } },
+                },
+            },
+            {
+                $sort: {
+                    _id: 1 as 1,
+                },
+            },
+        ];
+
+        const result = await this.bookingModel.aggregate(pipeline).exec();
+        const weeklyRevenue = Array(7).fill(0);
+        for (const item of result) {
+            const dayIndex = item._id - 1;
+            weeklyRevenue[dayIndex] = item.totalFare;
+        }
+        console.log(weeklyRevenue);
+        return weeklyRevenue
+    }
 }
 export default BookingService;

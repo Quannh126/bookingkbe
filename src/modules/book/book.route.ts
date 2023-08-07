@@ -40,6 +40,25 @@ export default class BookingRoute implements Route {
             verifyRolesMiddleware(rolesMap[this.path]),
             this.bookingController.getDonut
         );
+
+        this.router.get(
+            this.path + "/getYearData",
+            authMiddleware,
+            verifyRolesMiddleware(rolesMap[this.path]),
+            this.bookingController.getYearData
+        );
+        this.router.get(
+            this.path + "/getMonthData",
+            authMiddleware,
+            verifyRolesMiddleware(rolesMap[this.path]),
+            this.bookingController.getMonthData
+        );
+        this.router.get(
+            this.path + "/getWeekData",
+            authMiddleware,
+            verifyRolesMiddleware(rolesMap[this.path]),
+            this.bookingController.getWeekData
+        );
         this.router.put(
             this.path,
             authMiddleware,

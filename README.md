@@ -11,7 +11,8 @@
 ## Quick start
 
 <ol>
-    <li>Install latest versions for Node.js, yarn, Typescript and NPM </li>
+    <li>Install latest versions for Node.js, yarn, Typescript and NPM</li>
+    <li>Install latest versions for ts-node global </li>
     <li>Clone repository: <code>git clone https://github.com/Quannh126/bookingkbe</code></li>
     <li>Install dependencies: Run <code>yarn install</code> inside the project folder</li>
     <li>Create env fire follow keys and values below. </li>
