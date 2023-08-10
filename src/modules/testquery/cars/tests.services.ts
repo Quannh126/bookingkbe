@@ -1,5 +1,7 @@
 import { Car, ICar, ICarDetail } from "@modules/cars";
 import { isEmptyObject } from "@core/utils/helper";
+import sendMail from "@core/utils/sendmail"
+import genarateEmail from "@core/utils/generateEmail"
 import { HttpException } from "@core/exceptions";
 import { IPagination, NameValue } from "@core/interfaces";
 import { AddCarDto, UpdateCarDto } from "@modules/cars/dto";
@@ -148,6 +150,41 @@ class TestsService {
             return listBooked;
         }
         return [];
+    }
+
+    public async testSendMail(): Promise<string> {
+        try {
+            // const email = await genarateEmail({
+            //     name: "Quan",
+            //     pickup: "Ha noi",
+            //     dropoff: "Tuyen quang",
+            //     start_time: "12:21",
+            //     seat: "12",
+            //     ticket_code: "12312312",
+            //     payment_code: "212cashjkda",
+            //     amount: "12000 d",
+            // }).catch(err => {
+            //     console.log("ErrorGenerate: ", err)
+            // });
+            // console.log('email: ', email)
+            await sendMail.sendMail('quankidz96@gmail.com', "Test email", await genarateEmail({
+                name: "Quan",
+                pickup: "Ha noi",
+                dropoff: "Tuyen quang",
+                start_time: "12:21",
+                seat: "12",
+                ticket_code: "12312312",
+                payment_code: "212cashjkda",
+                amount: "12000 d",
+                journey_date: "12323"
+            }));
+            return 'sendMailSuccess';
+        } catch (error) {
+            console.log(error)
+            return error as string
+        } finally {
+            return "";
+        }
     }
 }
 export default TestsService;

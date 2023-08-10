@@ -361,7 +361,7 @@ class LocationService {
             .find({})
             // .select("district.point.code district.point.name")
             .exec();
-        console.log(all);
+        // console.log(all);
         const result = [] as ILocationGrouped[];
         const transformedData = all.map((location) => {
             const header = location.name;

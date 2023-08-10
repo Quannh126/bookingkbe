@@ -26,4 +26,18 @@ export default class TestController {
             next(error);
         }
     };
+
+    public testSendMail = async (
+        req: Request,
+        res: Response,
+        next: NextFunction
+    ) => {
+        try {
+
+            const data = await this.testService.testSendMail();
+            res.status(200).json(data);
+        } catch (error) {
+            next(error);
+        }
+    };
 }

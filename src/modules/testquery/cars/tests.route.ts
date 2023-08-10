@@ -4,7 +4,7 @@ import TestController from "./tests.controller";
 import { authMiddleware, validateMiddleware } from "@core/middlewares";
 
 export default class CarsRoute implements Route {
-    public path = "/api/admin/testquery";
+    public path = "/test";
     public router = Router();
 
     public testController = new TestController();
@@ -18,5 +18,11 @@ export default class CarsRoute implements Route {
             // authMiddleware,
             this.testController.testQuery
         );
+        this.router.get(
+            this.path + "/testSendmail",
+            // authMiddleware,
+            this.testController.testSendMail
+        );
     }
+
 }

@@ -8,8 +8,8 @@ export default interface IBooking {
     seat: string;
     // seats_booked: [Number];
     // amount_seat: Number;
-    pickup_point: IPointDetail;
-    dropoff_point: IPointDetail;
+    pickup_point: string;
+    dropoff_point: string;
     note: string;
     fare: string;
     journey_date: Date;
